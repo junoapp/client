@@ -11,4 +11,8 @@ module.exports = {
   },
   variants: {},
   plugins: [],
+  'tailwindCSS.includeLanguages': {
+    typescript: 'javascript',
+    typescriptreact: 'javascript',
+  },
 }
