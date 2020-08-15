@@ -35,4 +35,8 @@
   @apply outline-none bg-white border-gray-500;
 }
 
+.hide {
+  @apply opacity-0 absolute hidden;
+}
+
 @tailwind utilities;
