@@ -13,7 +13,7 @@ export function useButtonGroup(
         <button
           key={option.type}
           type="button"
-          className={`button button-primary ${applyClass(dataset === option.type, 'active')}`}
+          className={`button button-primary mr-2 ${applyClass(dataset === option.type, 'active')}`}
           onClick={() => setDataset(option.type)}
         >
           {option.label}

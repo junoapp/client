@@ -13,6 +13,7 @@ import { UploadInfoField } from '../models/upload-info';
 export function DatasetColumns(): JSX.Element {
   const [isLoading, setLoading] = useState(false);
   const [values, setValues] = useState<{ fields: Array<UploadInfoField> }>({ fields: [] });
+  const [name, setName] = useState<string | undefined>(undefined);
 
   const { id } = useParams();
   const history = useHistory();
@@ -27,6 +28,7 @@ export function DatasetColumns(): JSX.Element {
         });
       });
 
+      setName(response.name);
       setLoading(false);
       setValues({
         fields: formFields,
@@ -40,7 +42,7 @@ export function DatasetColumns(): JSX.Element {
 
   return (
     <div className="relative">
-      <Card className="min-h">
+      <Card className="min-h" title={name}>
         <Loading loading={isLoading} />
 
         {!isLoading && (
@@ -96,7 +98,7 @@ export function DatasetColumns(): JSX.Element {
                     )}
                   </FieldArray>
                   <div className="flex justify-end">
-                    <button type="button" className="button" onClick={backToHome}>
+                    <button type="button" className="button mr-2" onClick={backToHome}>
                       Cancel
                     </button>
                     <button type="submit" className="button button-primary">
