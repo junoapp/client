@@ -1,18 +1,20 @@
 import React from 'react';
-import { FormikProps } from 'formik';
+import { FieldInputProps } from 'formik';
 
 export function Input({
   name,
   label,
   type,
   placeholder,
+  disabled,
   formik,
 }: {
   name: string;
   label: string;
   type?: string;
   placeholder?: string;
-  formik: FormikProps<any>;
+  disabled?: boolean;
+  formik: { getFieldProps: (name: string) => FieldInputProps<any> };
 }): JSX.Element {
   return (
     <div>
@@ -24,6 +26,7 @@ export function Input({
         id={name}
         type={type || 'text'}
         placeholder={placeholder || ''}
+        disabled={disabled}
         {...formik.getFieldProps(name)}
       />
     </div>

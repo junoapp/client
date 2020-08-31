@@ -1,3 +1,3 @@
-export function applyClass(condition: boolean, className: string) {
-  return condition ? className : '';
+export function applyClass(condition: boolean | string | undefined, className?: string) {
+  return className ? (condition ? className : '') : condition ? condition : '';
 }

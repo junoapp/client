@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { Input } from './Input';
-import { Select } from './Select';
+import { Input } from './form/Input';
+import { Select } from './form/Select';
 
 export function DatabaseConnectionForm() {
   const formik = useFormik({
