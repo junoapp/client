@@ -5,6 +5,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 
 import { Home } from './pages/Home';
 import { DatasetColumns } from './pages/DatasetColumns';
+import { DatasetData } from './pages/DatasetData';
 
 library.add(fas);
 
@@ -19,8 +20,11 @@ function App(): JSX.Element {
 
           <div className="container mx-auto pt-4 mb-8">
             <Switch>
-              <Route path="/dataset/:id">
+              <Route path="/dataset/:id/columns">
                 <DatasetColumns />
+              </Route>
+              <Route path="/dataset/:id/data">
+                <DatasetData />
               </Route>
               <Route path="/">
                 <Home />

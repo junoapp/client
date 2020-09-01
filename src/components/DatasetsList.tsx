@@ -76,7 +76,7 @@ export function DatasetsList(): JSX.Element {
               </div>
               <div className="flex">
                 <Link
-                  to={`dataset/${dataset.id}`}
+                  to={`dataset/${dataset.id}/${dataset.columns.length > 0 ? 'data' : 'columns'}`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="pencil-alt" />
