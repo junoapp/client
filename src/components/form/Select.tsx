@@ -1,5 +1,6 @@
 import React from 'react';
 import { FieldInputProps } from 'formik';
+import { DropdownOption } from '../../models/dropdown-option';
 
 export function Select({
   name,
@@ -9,11 +10,7 @@ export function Select({
 }: {
   name: string;
   label: string;
-  options: Array<{
-    value: string;
-    label: string;
-    isDisabled?: boolean;
-  }>;
+  options: Array<DropdownOption>;
   formik: { getFieldProps: (name: string) => FieldInputProps<any> };
 }): JSX.Element {
   return (
