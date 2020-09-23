@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HorizontalBarChart } from '../charts/HorizontalBarChart';
+import { Dataset } from '../models/dataset';
 import { Schema, SchemaColumn, SchemaColumnMeasure, SchemaIndexDimension } from '../models/schema';
+import { getById } from '../services/dataset.service';
 import { generateMap, stopServer, requestData } from '../services/nanocube.service';
 
 export function DatasetData(): JSX.Element {
@@ -9,6 +11,7 @@ export function DatasetData(): JSX.Element {
   const [indexDimensions, setIndexDimensions] = useState<SchemaIndexDimension[] | undefined>();
   const [totalColumn, setTotalColumn] = useState<SchemaColumn | undefined>();
   const [indexColumn, setIndexColumn] = useState<Record<string, SchemaColumnMeasure[]>>({});
+  const [dataset, setDataset] = useState<Dataset | undefined>();
 
   const [chartData, setChartData] = useState<any[]>();
 
@@ -28,11 +31,13 @@ export function DatasetData(): JSX.Element {
 
   const requestHandler = async () => {
     const schemas: Schema[] = await requestData<Schema[]>('schema()');
-
-    const total = await requestData<SchemaColumn[]>('q(juno)');
+    const total: SchemaColumn[] = await requestData<SchemaColumn[]>('q(juno)');
 
     setTotalColumn(total[0]);
     setIndexDimensions(schemas[0].index_dimensions);
+
+    const dataset: Dataset = await getById(+id);
+    setDataset(dataset);
 
     const indexData: Record<string, SchemaColumnMeasure[]> = {};
 
@@ -48,26 +53,44 @@ export function DatasetData(): JSX.Element {
 
     setIndexColumn(indexData);
 
-    const teste = schemas[0].index_dimensions
+    const chartData = schemas[0].index_dimensions
       .filter((dimension) => dimension.num_levels <= 3)
-      .map((dimension) => ({
-        name: dimension.name,
-        values: Object.keys(dimension.aliases).map((alias, index) => ({
-          name: dimension.aliases[alias],
-          index,
-          value: indexData[dimension.name] && indexData[dimension.name][0].values[index],
-        })),
-      }));
+      .map((dimension) => {
+        const column = dataset.columns.find((column) => column.name === dimension.name);
 
-    setChartData(teste);
+        return {
+          name: dimension.name,
+          index: column?.index || 0,
+          values: Object.keys(dimension.aliases).map((alias, index) => ({
+            name: dimension.aliases[alias],
+            index,
+            value: indexData[dimension.name] && indexData[dimension.name][0].values[index],
+          })),
+        };
+      });
+
+    chartData.sort((a, b) => a.index - b.index);
+
+    setChartData(chartData);
   };
 
-  const onPress = async (data: any) => {
-    const d = await requestData<any>(
-      `q(juno.b('country',pathagg(p(${data.index}))).b('state',dive(p(),1)))`
-    );
+  const onPress = async (chart: any, data: any) => {
+    console.log({ chart, data, dataset, chartData, indexDimensions });
 
-    console.log(d);
+    if (chartData) {
+      const index = chartData.findIndex((cData) => cData.name === chart.name);
+      const next = chartData.find((cData) => cData.index > chartData[index].index);
+
+      if (next) {
+        const [d] = await requestData<SchemaColumn[]>(
+          `q(juno.b('country',pathagg(p(${data.index}))).b('${next.name}',dive(p(),1)))`
+        );
+
+        const indexDimension = indexDimensions?.find((index) => index.name === next.name);
+
+        console.log(d, indexDimension);
+      }
+    }
   };
 
   return (
@@ -91,7 +114,11 @@ export function DatasetData(): JSX.Element {
 
       {chartData &&
         chartData.map((chart) => (
-          <HorizontalBarChart key={chart.name} data={chart.values} onPress={onPress} />
+          <HorizontalBarChart
+            key={chart.name}
+            data={chart.values}
+            onPress={(data) => onPress(chart, data)}
+          />
         ))}
     </div>
   );

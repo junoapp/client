@@ -15,6 +15,7 @@ export interface Dataset extends BasicColumns {
     id: number;
     name: string;
     type: DatasetColumnType;
+    index: number;
   }>;
 }
 

@@ -8,6 +8,10 @@ export async function getAll(): Promise<Dataset[]> {
   return ky.get('http://localhost:3001/api/dataset').json();
 }
 
+export async function getById(id: number): Promise<Dataset> {
+  return ky.get(`http://localhost:3001/api/dataset/${id}`).json();
+}
+
 export async function uploadDataset(file: File): Promise<Dataset> {
   const formData = new FormData();
   formData.append('file', file);
