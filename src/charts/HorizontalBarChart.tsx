@@ -10,6 +10,7 @@ function elementId(svgId: string, id: string): string {
 export type ChartData = { name: string; value: number; index: number };
 
 export function HorizontalBarChart(props: {
+  name: string;
   data: Array<ChartData>;
   onPress: (data: ChartData) => void;
 }): JSX.Element {
@@ -105,5 +106,10 @@ export function HorizontalBarChart(props: {
     groupAxis.append('g').call(yAxis).attr('transform', `translate(${margin.left}, 0)`);
   }, [id, props]);
 
-  return <div id={id}></div>;
+  return (
+    <div>
+      <h1>{props.name}</h1>
+      <div id={id}></div>
+    </div>
+  );
 }

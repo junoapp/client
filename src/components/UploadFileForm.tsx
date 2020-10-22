@@ -19,7 +19,9 @@ export function UploadFileForm(): JSX.Element {
 
         const response = await uploadDataset(event.target.files[0]);
 
-        history.push(`/dataset/${response.id}/columns`);
+        console.log(response);
+
+        history.push(`/dataset/${response.id}/dashboard`);
       } catch (error) {
         console.log(error);
       }
