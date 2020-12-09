@@ -14,12 +14,20 @@ export interface Dataset extends BasicColumns {
   columns: Array<{
     id: number;
     name: string;
-    type: DatasetColumnType;
+    role: DatasetColumnRole;
+    dataType: DatasetDataType;
     index: number;
   }>;
 }
 
-export enum DatasetColumnType {
+export enum DatasetColumnRole {
   DIMENSION = 'dimension',
   MEASURE = 'measure',
+}
+
+export enum DatasetDataType {
+  STRING = 'string',
+  NUMBER = 'number',
+  BOOLEAN = 'boolean',
+  DATE = 'date',
 }

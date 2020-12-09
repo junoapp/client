@@ -21,7 +21,7 @@ export function UploadFileForm(): JSX.Element {
 
         console.log(response);
 
-        history.push(`/dataset/${response.id}/dashboard`);
+        history.push(`/`);
       } catch (error) {
         console.log(error);
       }

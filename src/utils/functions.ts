@@ -6,6 +6,10 @@ export function generateId(): string {
   return 'juno-' + Math.random().toString(36).substr(2, 9);
 }
 
+export function generateId2(): string {
+  return 'j' + Math.random().toString(36).substr(2, 9);
+}
+
 export function scaleBandInvert(scale: d3.ScaleBand<string>) {
   var domain = scale.domain();
   var paddingOuter = scale(domain[0]) || 0;

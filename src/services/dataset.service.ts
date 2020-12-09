@@ -12,8 +12,18 @@ export async function getById(id: number): Promise<Dataset> {
   return ky.get(`http://localhost:3001/api/dataset/${id}`).json();
 }
 
-export async function getDataForColumn(datasetId: number, columnId: number): Promise<any[]> {
-  return ky.get(`http://localhost:3001/api/dashboard/${datasetId}/column/${columnId}`).json();
+export async function getDataForColumn(
+  datasetId: number,
+  name: string,
+  value?: string
+): Promise<any[]> {
+  if (value) {
+    return ky
+      .get(`http://localhost:3001/api/dashboard/${datasetId}/column/${name}/${value}`)
+      .json();
+  }
+
+  return ky.get(`http://localhost:3001/api/dashboard/${datasetId}/column/${name}`).json();
 }
 
 export async function uploadDataset(file: File): Promise<Dataset> {

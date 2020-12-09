@@ -3,7 +3,7 @@ import { formatRelative } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 import { getAll, remove } from '../services/dataset.service';
-import { Dataset, DatasetColumnType } from '../models/dataset';
+import { Dataset, DatasetColumnRole } from '../models/dataset';
 import { Alert } from './ui/Alert';
 import { Loading } from './ui/Loading';
 import { Card } from './ui/Card';
@@ -27,8 +27,8 @@ export function DatasetsList(): JSX.Element {
     load();
   }, []);
 
-  const countColumns = (dataset: Dataset, type: DatasetColumnType): React.ReactNode => {
-    const count = dataset.columns.filter((column) => column.type === type).length;
+  const countColumns = (dataset: Dataset, type: DatasetColumnRole): React.ReactNode => {
+    const count = dataset.columns.filter((column) => column.role === type).length;
 
     if (count > 0) {
       return (
@@ -66,8 +66,8 @@ export function DatasetsList(): JSX.Element {
             <Card title={dataset.originalname}>
               <div className="flex flex-col items-start">
                 <Badge>CSV</Badge>
-                {countColumns(dataset, DatasetColumnType.MEASURE)}
-                {countColumns(dataset, DatasetColumnType.DIMENSION)}
+                {countColumns(dataset, DatasetColumnRole.MEASURE)}
+                {countColumns(dataset, DatasetColumnRole.DIMENSION)}
                 <span className="text-gray-600 text-xs mb-2">
                   Updated {formatRelative(new Date(dataset.updatedDate), new Date())}
                   <br />

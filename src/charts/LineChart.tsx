@@ -9,7 +9,7 @@ function elementId(svgId: string, id: string): string {
 
 export type ChartData = { name: string; value: number; index: number };
 
-export function HorizontalBarChart(props: {
+export function LineChart(props: {
   name: string;
   data: Array<ChartData>;
   onPress: (data: ChartData) => void;
@@ -85,18 +85,36 @@ export function HorizontalBarChart(props: {
         groupHover.selectAll('.hover-rect').remove();
       });
 
+    const lineGenerator = d3
+      .line<ChartData>()
+      .x((d) => xScale(d.name)!)
+      .y((d) => yScale(d.value));
+
+    console.log(lineGenerator(props.data));
     groupData
-      .selectAll('rect.data-item')
-      .data(props.data)
-      .enter()
-      .append('rect')
-      .attr('class', 'data-item')
-      .attr('x', (d) => xScale(d.name) as number)
-      .attr('y', (d) => yScale(d.value))
-      .attr('width', xScale.bandwidth())
-      .attr('height', (d) => yScale(0) - yScale(d.value))
-      .attr('fill', (d) => colorScale(d.name))
-      .attr('pointer-events', 'none');
+      .append('path')
+      .datum(props.data)
+      .attr('g', lineGenerator)
+      .attr('width', width)
+      .attr('height', height)
+      .attr('fill', 'none')
+      .attr('stroke', 'steelblue')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round');
+
+    // groupData
+    //   .selectAll('rect.data-item')
+    //   .data(props.data)
+    //   .enter()
+    //   .append('rect')
+    //   .attr('class', 'data-item')
+    //   .attr('x', (d) => xScale(d.name) as number)
+    //   .attr('y', (d) => yScale(d.value))
+    //   .attr('width', xScale.bandwidth())
+    //   .attr('height', (d) => yScale(0) - yScale(d.value))
+    //   .attr('fill', (d) => colorScale(d.name))
+    //   .attr('pointer-events', 'none');
 
     groupAxis
       .append('g')
@@ -104,10 +122,6 @@ export function HorizontalBarChart(props: {
       .attr('transform', `translate(0, ${height - margin.bottom})`);
 
     groupAxis.append('g').call(yAxis).attr('transform', `translate(${margin.left}, 0)`);
-
-    return () => {
-      svg.remove();
-    };
   }, [id, props]);
 
   return (

@@ -13,7 +13,10 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
     "chokidar-cli": "^2.1.0",
+    "compassql": "^0.21.2",
     "d3": "^6.1.1",
     "date-fns": "^2.16.0",
     "formik": "^2.1.5",
@@ -24,8 +27,11 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.2",
+    "react-vega": "^7.4.1",
     "tailwindcss": "^1.6.2",
-    "typescript": "~3.7.2"
+    "typescript": "3",
+    "vega": "^5.17.0",
+    "vega-lite": "^4.17.0"
   },
   "scripts": {
     "build:tailwind": "tailwind build src/tailwind.css -o src/tailwind.output.css",

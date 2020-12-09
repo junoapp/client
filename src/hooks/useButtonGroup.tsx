@@ -9,16 +9,20 @@ export function useButtonGroup(
 
   const ButtonGroup = () => (
     <div className="flex items-start mt-2">
-      {options.map((option) => (
-        <button
-          key={option.type}
-          type="button"
-          className={`button button-primary mr-2 ${applyClass(dataset === option.type, 'active')}`}
-          onClick={() => setDataset(option.type)}
-        >
-          {option.label}
-        </button>
-      ))}
+      {options &&
+        options.map((option) => (
+          <button
+            key={option.type}
+            type="button"
+            className={`button button-primary mr-2 ${applyClass(
+              dataset === option.type,
+              'active'
+            )}`}
+            onClick={() => setDataset(option.type)}
+          >
+            {option.label}
+          </button>
+        ))}
     </div>
   );
 
