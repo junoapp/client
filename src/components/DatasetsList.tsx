@@ -79,6 +79,13 @@ export function DatasetsList(): JSX.Element {
                   to={`dataset/${dataset.id}/dashboard`}
                   className="button button-primary button-small mr-2"
                 >
+                  <FontAwesomeIcon icon="eye" />
+                  View
+                </Link>
+                <Link
+                  to={`dataset/${dataset.id}/columns`}
+                  className="button button-primary button-small mr-2"
+                >
                   <FontAwesomeIcon icon="pencil-alt" />
                   Edit
                 </Link>

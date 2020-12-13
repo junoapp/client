@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useParams, useHistory } from 'react-router-dom';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
-import { updateColumns, getColumns } from '../services/dataset.service';
+import { updateColumns, getById } from '../services/dataset.service';
 import { Loading } from '../components/ui/Loading';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/form/Input';
@@ -23,13 +23,15 @@ export function DatasetColumns(): JSX.Element {
 
   useEffect(() => {
     setLoading(true);
-    getColumns(+id).then((response) => {
+    getById(+id).then((response) => {
       const formFields: UploadInfoField[] = [];
       const indexes: DropdownOption[] = [];
 
-      response.fields.forEach((field, index) => {
+      response.columns.forEach((field, index) => {
         formFields.push({
-          name: field,
+          id: field.id,
+          name: field.name,
+          role: field.role,
           index,
         });
 
@@ -41,7 +43,7 @@ export function DatasetColumns(): JSX.Element {
       });
 
       setIndexOptions(indexes);
-      setName(response.name);
+      setName(response.originalname);
       setLoading(false);
       setValues({
         fields: formFields,
@@ -70,8 +72,10 @@ export function DatasetColumns(): JSX.Element {
               enableReinitialize={true}
               initialValues={values}
               onSubmit={async (values) => {
+                const fields = values.fields.map((f, i) => ({ ...f, index: i }));
+                console.log(values, fields);
                 setLoading(true);
-                await updateColumns(+id, values.fields);
+                await updateColumns(+id, fields);
                 backToHome();
               }}
             >
@@ -97,12 +101,13 @@ export function DatasetColumns(): JSX.Element {
                                           <FontAwesomeIcon icon="bars" />
                                         </div>
                                         <div className="px-4 w-1/5">
-                                          <Select
+                                          {index}
+                                          {/* <Select
                                             name={`fields.${index}.index`}
                                             label="Index"
                                             options={indexOptions}
                                             formik={{ getFieldProps }}
-                                          />
+                                          /> */}
                                         </div>
                                         <div className="px-4 w-2/5">
                                           <Input
@@ -114,7 +119,7 @@ export function DatasetColumns(): JSX.Element {
                                         </div>
                                         <div className="px-4 w-2/5">
                                           <Select
-                                            name={`fields.${index}.type`}
+                                            name={`fields.${index}.role`}
                                             label="Type"
                                             options={[
                                               { value: 'measure', label: 'Measure' },

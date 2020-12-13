@@ -11,13 +11,17 @@ export interface Dataset extends BasicColumns {
   destination: string;
   filename: string;
 
-  columns: Array<{
-    id: number;
-    name: string;
-    role: DatasetColumnRole;
-    dataType: DatasetDataType;
-    index: number;
-  }>;
+  columns: Array<DatasetColumn>;
+}
+
+export interface DatasetColumn {
+  id: number;
+  name: string;
+  role: DatasetColumnRole;
+  type: DatasetDataType;
+  expandedType: DatasetColumnExpandedType;
+  index: number;
+  distinctValues: number;
 }
 
 export enum DatasetColumnRole {
@@ -28,6 +32,16 @@ export enum DatasetColumnRole {
 export enum DatasetDataType {
   STRING = 'string',
   NUMBER = 'number',
+  INTEGER = 'integer',
   BOOLEAN = 'boolean',
   DATE = 'date',
+}
+
+export enum DatasetColumnExpandedType {
+  QUANTITATIVE = 'quantitative',
+  ORDINAL = 'ordinal',
+  TEMPORAL = 'temporal',
+  NOMINAL = 'nominal',
+  GEO = 'geo',
+  KEY = 'key',
 }

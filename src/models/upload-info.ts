@@ -1,1 +1,6 @@
-export type UploadInfoField = { name: string; index: number; type?: 'measure' | 'dimension' };
+export type UploadInfoField = {
+  id: number;
+  name: string;
+  index: number;
+  role?: 'measure' | 'dimension';
+};
