@@ -9,7 +9,7 @@ function elementId(svgId: string, id: string): string {
 
 export type ChartData = { name: string; value: number; index: number };
 
-export function HorizontalBarChart(props: {
+export function VerticalBarChart(props: {
   name: string;
   data: Array<ChartData>;
   onPress: (data: ChartData) => void;
@@ -20,7 +20,7 @@ export function HorizontalBarChart(props: {
     const margin = {
       top: 10,
       bottom: 30,
-      left: 100,
+      left: 40,
       right: 10,
     };
 
@@ -40,15 +40,15 @@ export function HorizontalBarChart(props: {
     const valueMax = d3.max(props.data, yAcessor) as number;
 
     const xScale = d3
-      .scaleLinear()
-      .domain([0, valueMax])
-      .range([margin.left, width - margin.right]);
-
-    const yScale = d3
       .scaleBand()
       .domain(keys)
       .paddingInner(0.1)
       .paddingOuter(0.1)
+      .range([margin.left, width - margin.right]);
+
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, valueMax])
       .range([height - margin.bottom, margin.top]);
 
     const colorScale = d3.scaleOrdinal(keys.length > 10 ? ['#3575B1'] : d3.schemeCategory10);
@@ -56,34 +56,34 @@ export function HorizontalBarChart(props: {
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    // svg
-    //   .on('mousemove', function (event: any) {
-    //     const [x] = (d3 as any).pointer(event);
+    svg
+      .on('mousemove', function (event: any) {
+        const [x] = (d3 as any).pointer(event);
 
-    //     const name = scaleBandInvert(xScale)(x);
+        const name = scaleBandInvert(xScale)(x);
 
-    //     const d = props.data.find((d) => d.name === name);
+        const d = props.data.find((d) => d.name === name);
 
-    //     groupHover.selectAll('.hover-rect').remove();
-    //     if (d) {
-    //       const scaleMargin = xScale.step() * xScale.paddingInner();
+        groupHover.selectAll('.hover-rect').remove();
+        if (d) {
+          const scaleMargin = xScale.step() * xScale.paddingInner();
 
-    //       groupHover
-    //         .append('rect')
-    //         .attr('class', 'hover-rect')
-    //         .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
-    //         .attr('y', yScale(valueMax))
-    //         .attr('width', xScale.bandwidth() + scaleMargin)
-    //         .attr('height', yScale(0) - margin.top)
-    //         .attr('fill', '#ccc')
-    //         .on('click', () => {
-    //           props.onPress(d);
-    //         });
-    //     }
-    //   })
-    //   .on('mouseleave', () => {
-    //     groupHover.selectAll('.hover-rect').remove();
-    //   });
+          groupHover
+            .append('rect')
+            .attr('class', 'hover-rect')
+            .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
+            .attr('y', yScale(valueMax))
+            .attr('width', xScale.bandwidth() + scaleMargin)
+            .attr('height', yScale(0) - margin.top)
+            .attr('fill', '#ccc')
+            .on('click', () => {
+              props.onPress(d);
+            });
+        }
+      })
+      .on('mouseleave', () => {
+        groupHover.selectAll('.hover-rect').remove();
+      });
 
     groupData
       .selectAll('rect.data-item')
@@ -91,10 +91,10 @@ export function HorizontalBarChart(props: {
       .enter()
       .append('rect')
       .attr('class', 'data-item')
-      .attr('x', xScale(0))
-      .attr('y', (d) => yScale(d.name) as number)
-      .attr('width', (d) => xScale(d.value))
-      .attr('height', yScale.bandwidth())
+      .attr('x', (d) => xScale(d.name) as number)
+      .attr('y', (d) => yScale(d.value))
+      .attr('width', xScale.bandwidth())
+      .attr('height', (d) => yScale(0) - yScale(d.value))
       .attr('fill', (d) => colorScale(d.name))
       .attr('pointer-events', 'none');
 

@@ -26,8 +26,8 @@ export async function getDataForColumn(
   return ky.get(`http://localhost:3001/api/dashboard/${datasetId}/column/${name}`).json();
 }
 
-export async function getSpec(datasetId: number, spec: any): Promise<any[]> {
-  return ky.post(`http://localhost:3001/api/dashboard/${datasetId}/spec`, { json: spec }).json();
+export async function getSpec(datasetId: number): Promise<any[]> {
+  return ky.get(`http://localhost:3001/api/dashboard/${datasetId}/spec`).json();
 }
 
 export async function uploadDataset(file: File): Promise<Dataset> {

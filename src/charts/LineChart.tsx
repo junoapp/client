@@ -33,17 +33,17 @@ export function LineChart(props: {
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupAxis = svg.append('g').attr('id', elementId(id, 'group-axis'));
 
-    const xAcessor = (d: ChartData) => d.name;
+    const xAcessor = (d: ChartData) => new Date(d.name);
     const yAcessor = (d: ChartData) => d.value;
 
     const keys = props.data.map(xAcessor);
     const valueMax = d3.max(props.data, yAcessor) as number;
 
+    const extent = d3.extent(props.data, xAcessor) as Date[];
+
     const xScale = d3
-      .scaleBand()
-      .domain(keys)
-      .paddingInner(0.1)
-      .paddingOuter(0.1)
+      .scaleTime()
+      .domain(extent)
       .range([margin.left, width - margin.right]);
 
     const yScale = d3
@@ -56,45 +56,45 @@ export function LineChart(props: {
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    svg
-      .on('mousemove', function (event: any) {
-        const [x] = (d3 as any).pointer(event);
+    // svg
+    //   .on('mousemove', function (event: any) {
+    //     const [x] = (d3 as any).pointer(event);
 
-        const name = scaleBandInvert(xScale)(x);
+    //     const name = scaleBandInvert(xScale)(x);
 
-        const d = props.data.find((d) => d.name === name);
+    //     const d = props.data.find((d) => d.name === name);
 
-        groupHover.selectAll('.hover-rect').remove();
-        if (d) {
-          const scaleMargin = xScale.step() * xScale.paddingInner();
+    //     groupHover.selectAll('.hover-rect').remove();
+    //     if (d) {
+    //       const scaleMargin = xScale.step() * xScale.paddingInner();
 
-          groupHover
-            .append('rect')
-            .attr('class', 'hover-rect')
-            .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
-            .attr('y', yScale(valueMax))
-            .attr('width', xScale.bandwidth() + scaleMargin)
-            .attr('height', yScale(0) - margin.top)
-            .attr('fill', '#ccc')
-            .on('click', () => {
-              props.onPress(d);
-            });
-        }
-      })
-      .on('mouseleave', () => {
-        groupHover.selectAll('.hover-rect').remove();
-      });
+    //       groupHover
+    //         .append('rect')
+    //         .attr('class', 'hover-rect')
+    //         .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
+    //         .attr('y', yScale(valueMax))
+    //         .attr('width', xScale.bandwidth() + scaleMargin)
+    //         .attr('height', yScale(0) - margin.top)
+    //         .attr('fill', '#ccc')
+    //         .on('click', () => {
+    //           props.onPress(d);
+    //         });
+    //     }
+    //   })
+    //   .on('mouseleave', () => {
+    //     groupHover.selectAll('.hover-rect').remove();
+    //   });
 
     const lineGenerator = d3
       .line<ChartData>()
-      .x((d) => xScale(d.name)!)
+      .defined((d) => !isNaN(d.value))
+      .x((d) => xScale(new Date(d.name))!)
       .y((d) => yScale(d.value));
 
-    console.log(lineGenerator(props.data));
     groupData
       .append('path')
       .datum(props.data)
-      .attr('g', lineGenerator)
+      .attr('d', lineGenerator)
       .attr('width', width)
       .attr('height', height)
       .attr('fill', 'none')
