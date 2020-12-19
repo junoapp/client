@@ -29,7 +29,7 @@ export function LineChart(props: {
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
     const width = svg.node()?.getBoundingClientRect().width as number;
 
-    const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
+    // const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupAxis = svg.append('g').attr('id', elementId(id, 'group-axis'));
 
@@ -38,6 +38,8 @@ export function LineChart(props: {
 
     const keys = props.data.map(xAcessor);
     const valueMax = d3.max(props.data, yAcessor) as number;
+
+    console.log(props.name, valueMax);
 
     const extent = d3.extent(props.data, xAcessor) as Date[];
 

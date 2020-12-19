@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 src/tailwind.output.css
+
+yalc.lock
+.yalc
