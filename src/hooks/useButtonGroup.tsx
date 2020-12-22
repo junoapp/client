@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { applyClass } from '../utils/functions';
 
 export function useButtonGroup(

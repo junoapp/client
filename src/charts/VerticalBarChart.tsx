@@ -27,7 +27,7 @@ export function VerticalBarChart(props: {
     const height = 400;
 
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
-    const width = svg.node()?.getBoundingClientRect().width as number;
+    const width = svg.node()?.getBoundingClientRect().width;
 
     const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
@@ -37,7 +37,7 @@ export function VerticalBarChart(props: {
     const yAcessor = (d: ChartData) => d.value;
 
     const keys = props.data.map(xAcessor);
-    const valueMax = d3.max(props.data, yAcessor) as number;
+    const valueMax = d3.max(props.data, yAcessor);
 
     const xScale = d3
       .scaleBand()

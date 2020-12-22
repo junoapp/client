@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 
 import { generateId, scaleBandInvert } from '../utils/functions';
@@ -27,7 +27,7 @@ export function HorizontalBarChart(props: {
     const height = 400;
 
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
-    const width = svg.node()?.getBoundingClientRect().width as number;
+    const width = svg.node()?.getBoundingClientRect().width;
 
     const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
@@ -37,7 +37,7 @@ export function HorizontalBarChart(props: {
     const yAcessor = (d: ChartData) => d.value;
 
     const keys = props.data.map(xAcessor);
-    const valueMax = d3.max(props.data, yAcessor) as number;
+    const valueMax = d3.max(props.data, yAcessor);
 
     const xScale = d3
       .scaleLinear()
@@ -92,7 +92,7 @@ export function HorizontalBarChart(props: {
       .append('rect')
       .attr('class', 'data-item')
       .attr('x', xScale(0))
-      .attr('y', (d) => yScale(d.name) as number)
+      .attr('y', (d) => yScale(d.name))
       .attr('width', (d) => xScale(d.value))
       .attr('height', yScale.bandwidth())
       .attr('fill', (d) => colorScale(d.name))

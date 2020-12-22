@@ -27,7 +27,7 @@ export function LineChart(props: {
     const height = 400;
 
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
-    const width = svg.node()?.getBoundingClientRect().width as number;
+    const width = svg.node()?.getBoundingClientRect().width;
 
     // const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
@@ -37,11 +37,11 @@ export function LineChart(props: {
     const yAcessor = (d: ChartData) => d.value;
 
     const keys = props.data.map(xAcessor);
-    const valueMax = d3.max(props.data, yAcessor) as number;
+    const valueMax = d3.max(props.data, yAcessor);
 
     console.log(props.name, valueMax);
 
-    const extent = d3.extent(props.data, xAcessor) as Date[];
+    const extent = d3.extent(props.data, xAcessor);
 
     const xScale = d3
       .scaleTime()
@@ -90,7 +90,7 @@ export function LineChart(props: {
     const lineGenerator = d3
       .line<ChartData>()
       .defined((d) => !isNaN(d.value))
-      .x((d) => xScale(new Date(d.name))!)
+      .x((d) => xScale(new Date(d.name)))
       .y((d) => yScale(d.value));
 
     groupData

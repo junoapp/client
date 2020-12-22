@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useButtonGroup } from '../hooks/useButtonGroup';
 import { UploadFileForm } from '../components/UploadFileForm';
 import { DatabaseConnectionForm } from '../components/DatabaseConnectionForm';

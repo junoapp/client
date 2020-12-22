@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
