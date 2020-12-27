@@ -1,4 +1,3 @@
-import React from 'react';
 import { FieldInputProps } from 'formik';
 
 export function Input({

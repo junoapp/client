@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useParams, useHistory } from 'react-router-dom';
@@ -16,7 +16,6 @@ export function DatasetColumns(): JSX.Element {
   const [isLoading, setLoading] = useState(false);
   const [values, setValues] = useState<{ fields: Array<UploadInfoField> }>({ fields: [] });
   const [name, setName] = useState<string | undefined>(undefined);
-  const [indexOptions, setIndexOptions] = useState<DropdownOption[]>([]);
 
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -42,7 +41,6 @@ export function DatasetColumns(): JSX.Element {
         });
       });
 
-      setIndexOptions(indexes);
       setName(response.originalname);
       setLoading(false);
       setValues({
@@ -100,15 +98,7 @@ export function DatasetColumns(): JSX.Element {
                                         <div className="px-4 flex items-center">
                                           <FontAwesomeIcon icon="bars" />
                                         </div>
-                                        <div className="px-4 w-1/5">
-                                          {index}
-                                          {/* <Select
-                                            name={`fields.${index}.index`}
-                                            label="Index"
-                                            options={indexOptions}
-                                            formik={{ getFieldProps }}
-                                          /> */}
-                                        </div>
+                                        <div className="px-4 w-1/5">{index}</div>
                                         <div className="px-4 w-2/5">
                                           <Input
                                             name={`fields.${index}.name`}

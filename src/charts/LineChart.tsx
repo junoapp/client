@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 
-import { generateId, scaleBandInvert } from '../utils/functions';
+import { generateId } from '../utils/functions';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -29,17 +29,13 @@ export function LineChart(props: {
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
     const width = svg.node()?.getBoundingClientRect().width;
 
-    // const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupAxis = svg.append('g').attr('id', elementId(id, 'group-axis'));
 
     const xAcessor = (d: ChartData) => new Date(d.name);
     const yAcessor = (d: ChartData) => d.value;
 
-    const keys = props.data.map(xAcessor);
     const valueMax = d3.max(props.data, yAcessor);
-
-    console.log(props.name, valueMax);
 
     const extent = d3.extent(props.data, xAcessor);
 
@@ -53,39 +49,8 @@ export function LineChart(props: {
       .domain([0, valueMax])
       .range([height - margin.bottom, margin.top]);
 
-    const colorScale = d3.scaleOrdinal(keys.length > 10 ? ['#3575B1'] : d3.schemeCategory10);
-
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
-
-    // svg
-    //   .on('mousemove', function (event: any) {
-    //     const [x] = (d3 as any).pointer(event);
-
-    //     const name = scaleBandInvert(xScale)(x);
-
-    //     const d = props.data.find((d) => d.name === name);
-
-    //     groupHover.selectAll('.hover-rect').remove();
-    //     if (d) {
-    //       const scaleMargin = xScale.step() * xScale.paddingInner();
-
-    //       groupHover
-    //         .append('rect')
-    //         .attr('class', 'hover-rect')
-    //         .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
-    //         .attr('y', yScale(valueMax))
-    //         .attr('width', xScale.bandwidth() + scaleMargin)
-    //         .attr('height', yScale(0) - margin.top)
-    //         .attr('fill', '#ccc')
-    //         .on('click', () => {
-    //           props.onPress(d);
-    //         });
-    //     }
-    //   })
-    //   .on('mouseleave', () => {
-    //     groupHover.selectAll('.hover-rect').remove();
-    //   });
 
     const lineGenerator = d3
       .line<ChartData>()
@@ -104,19 +69,6 @@ export function LineChart(props: {
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round');
-
-    // groupData
-    //   .selectAll('rect.data-item')
-    //   .data(props.data)
-    //   .enter()
-    //   .append('rect')
-    //   .attr('class', 'data-item')
-    //   .attr('x', (d) => xScale(d.name) as number)
-    //   .attr('y', (d) => yScale(d.value))
-    //   .attr('width', xScale.bandwidth())
-    //   .attr('height', (d) => yScale(0) - yScale(d.value))
-    //   .attr('fill', (d) => colorScale(d.name))
-    //   .attr('pointer-events', 'none');
 
     groupAxis
       .append('g')

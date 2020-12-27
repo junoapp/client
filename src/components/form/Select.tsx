@@ -1,4 +1,3 @@
-import React from 'react';
 import { FieldInputProps } from 'formik';
 import { DropdownOption } from '../../models/dropdown-option';
 

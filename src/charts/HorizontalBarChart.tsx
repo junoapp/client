@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 
-import { generateId, scaleBandInvert } from '../utils/functions';
+import { generateId } from '../utils/functions';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -29,7 +29,6 @@ export function HorizontalBarChart(props: {
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
     const width = svg.node()?.getBoundingClientRect().width;
 
-    const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupAxis = svg.append('g').attr('id', elementId(id, 'group-axis'));
 
@@ -55,35 +54,6 @@ export function HorizontalBarChart(props: {
 
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
-
-    // svg
-    //   .on('mousemove', function (event: any) {
-    //     const [x] = (d3 as any).pointer(event);
-
-    //     const name = scaleBandInvert(xScale)(x);
-
-    //     const d = props.data.find((d) => d.name === name);
-
-    //     groupHover.selectAll('.hover-rect').remove();
-    //     if (d) {
-    //       const scaleMargin = xScale.step() * xScale.paddingInner();
-
-    //       groupHover
-    //         .append('rect')
-    //         .attr('class', 'hover-rect')
-    //         .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
-    //         .attr('y', yScale(valueMax))
-    //         .attr('width', xScale.bandwidth() + scaleMargin)
-    //         .attr('height', yScale(0) - margin.top)
-    //         .attr('fill', '#ccc')
-    //         .on('click', () => {
-    //           props.onPress(d);
-    //         });
-    //     }
-    //   })
-    //   .on('mouseleave', () => {
-    //     groupHover.selectAll('.hover-rect').remove();
-    //   });
 
     groupData
       .selectAll('rect.data-item')

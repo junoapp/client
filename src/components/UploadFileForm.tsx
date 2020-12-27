@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { uploadDataset } from '../services/dataset.service';
@@ -10,7 +10,7 @@ export function UploadFileForm(): JSX.Element {
 
   const history = useHistory();
 
-  const onChangeHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeHandler = async (event: ChangeEvent<HTMLInputElement>) => {
     event.persist();
 
     if (event.target.files) {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { applyClass } from '../../utils/functions';
 
 export function Card({
@@ -16,7 +15,7 @@ export function Card({
     >
       {title && (
         <div className="px-6 pt-4">
-          <div className="font-bold text-xl mb-2">{title}</div>
+          <div className="font-bold text-xl mb-2 break-words">{title}</div>
         </div>
       )}
       <div className="px-6 py-4">{children}</div>

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatRelative } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 import { getAll, remove } from '../services/dataset.service';
-import { Dataset, DatasetColumnRole } from '../models/dataset';
+import { DatasetInterface, DatasetColumnRole } from '@junoapp/common';
 import { Alert } from './ui/Alert';
 import { Loading } from './ui/Loading';
 import { Card } from './ui/Card';
@@ -11,7 +11,7 @@ import { Badge } from './ui/Badge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export function DatasetsList(): JSX.Element {
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [datasets, setDatasets] = useState<DatasetInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const load = () => {
@@ -27,7 +27,7 @@ export function DatasetsList(): JSX.Element {
     load();
   }, []);
 
-  const countColumns = (dataset: Dataset, type: DatasetColumnRole): React.ReactNode => {
+  const countColumns = (dataset: DatasetInterface, type: DatasetColumnRole): React.ReactNode => {
     const count = dataset.columns.filter((column) => column.role === type).length;
 
     if (count > 0) {
@@ -61,7 +61,7 @@ export function DatasetsList(): JSX.Element {
 
       {!isLoading &&
         datasets.length > 0 &&
-        datasets.map((dataset: Dataset) => (
+        datasets.map((dataset: DatasetInterface) => (
           <div key={dataset['id']} className="w-1/3 px-4 mb-4">
             <Card title={dataset.originalname}>
               <div className="flex flex-col items-start">
