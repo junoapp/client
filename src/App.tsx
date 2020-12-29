@@ -13,7 +13,7 @@ function App(): JSX.Element {
     <div className="App">
       <BrowserRouter>
         <div>
-          <header className="bg-orange-500 p-3 text-white text-lg font-bold">
+          <header className="bg-yellow-500 p-3 text-white text-lg font-bold">
             <Link to="/">Juno</Link>
           </header>
 
