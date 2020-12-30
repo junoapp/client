@@ -15,7 +15,7 @@ export function Dashboard(): JSX.Element {
   useEffect(() => {
     getById(+id)
       .then((dataset: DatasetInterface) => getSpec(dataset.id))
-      .then((data) => {
+      .then((data: any[]) => {
         let cData: any[] = [];
 
         for (const datum of data) {
