@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatRelative } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { getAll, remove } from '../services/dataset.service';
 import { DatasetInterface, DatasetColumnRole } from '@junoapp/common';
@@ -13,6 +13,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export function DatasetsList(): JSX.Element {
   const [datasets, setDatasets] = useState<DatasetInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { id } = useParams<{ id: string }>();
 
   const load = () => {
     setIsLoading(true);
@@ -76,14 +78,14 @@ export function DatasetsList(): JSX.Element {
               </div>
               <div className="flex">
                 <Link
-                  to={`dataset/${dataset.id}/dashboard`}
+                  to={`/user/${id}/dashboards/${dataset.id}/view`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="eye" />
                   View
                 </Link>
                 <Link
-                  to={`dataset/${dataset.id}/columns`}
+                  to={`/user/${id}/dashboards/${dataset.id}/columns`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="pencil-alt" />

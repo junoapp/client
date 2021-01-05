@@ -19,7 +19,7 @@ export function Select({
       </label>
       <div className="relative">
         <select className="select" id={name} {...formik.getFieldProps(name)}>
-          <option>Select a {label.toLowerCase()}</option>
+          <option value="">Select a {label.toLowerCase()}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value} disabled={option.isDisabled || false}>
               {option.label}

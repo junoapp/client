@@ -14,7 +14,13 @@ import { DropdownOption } from '../models/dropdown-option';
 
 export function DatasetColumns(): JSX.Element {
   const [isLoading, setLoading] = useState(false);
-  const [values, setValues] = useState<{ fields: Array<UploadInfoField> }>({ fields: [] });
+  const [values, setValues] = useState<{
+    name: string;
+    type: string;
+    purpose: string;
+    fields: Array<UploadInfoField>;
+  }>({ name: '', type: '', purpose: '', fields: [] });
+
   const [name, setName] = useState<string | undefined>(undefined);
 
   const { id } = useParams<{ id: string }>();
@@ -44,13 +50,16 @@ export function DatasetColumns(): JSX.Element {
       setName(response.originalname);
       setLoading(false);
       setValues({
+        name: response.originalname,
+        type: '',
+        purpose: '',
         fields: formFields,
       });
     });
   }, [id]);
 
   const backToHome = () => {
-    history.replace('/');
+    history.goBack();
   };
 
   const onDragEnd = (result: DropResult, swap: (indexA: number, indexB: number) => void) => {
@@ -72,13 +81,47 @@ export function DatasetColumns(): JSX.Element {
               onSubmit={async (values) => {
                 const fields = values.fields.map((f, i) => ({ ...f, index: i }));
                 console.log(values, fields);
-                setLoading(true);
-                await updateColumns(+id, fields);
-                backToHome();
+                // setLoading(true);
+                // await updateColumns(+id, fields);
+                // backToHome();
               }}
             >
               {({ getFieldProps, values }) => (
                 <Form>
+                  <div className="flex -mx-4 bg-white">
+                    <div className="px-4 w-1/3">
+                      <Input name={`name`} label={`Name`} formik={{ getFieldProps }} />
+                    </div>
+                    <div className="px-4 w-1/3">
+                      <Select
+                        name={`type`}
+                        label="Goal Type"
+                        options={[
+                          { value: 'decisionMaking', label: 'Decision Making' },
+                          { value: 'awareness', label: 'Awareness' },
+                          { value: 'motivationalLearning', label: 'Motivational Learning' },
+                          { value: 'other', label: 'Other' },
+                        ]}
+                        formik={{ getFieldProps }}
+                      />
+                    </div>
+                    <div className="px-4 w-1/3">
+                      <Select
+                        name={`purpose`}
+                        label="Goal Purpose"
+                        options={[
+                          { value: 'strategic', label: 'Strategic' },
+                          { value: 'operational', label: 'Operational' },
+                          { value: 'organizational', label: 'Organizational' },
+                          { value: 'learning', label: 'Learning' },
+                        ]}
+                        formik={{ getFieldProps }}
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="mt-2 mb-4" />
+
                   <FieldArray name="fields">
                     {({ remove, move }) => (
                       <DragDropContext onDragEnd={(result) => onDragEnd(result, move)}>
@@ -102,7 +145,7 @@ export function DatasetColumns(): JSX.Element {
                                         <div className="px-4 w-2/5">
                                           <Input
                                             name={`fields.${index}.name`}
-                                            label={`Name ${item.name} ${index}`}
+                                            label={`Name`}
                                             formik={{ getFieldProps }}
                                             disabled
                                           />

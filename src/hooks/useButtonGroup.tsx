@@ -8,7 +8,7 @@ export function useButtonGroup(
   const [dataset, setDataset] = useState<string | undefined>(defaultValue);
 
   const ButtonGroup = () => (
-    <div className="flex items-start mt-2">
+    <div className="flex items-start">
       {options &&
         options.map((option) => (
           <button

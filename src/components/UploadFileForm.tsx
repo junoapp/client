@@ -1,5 +1,5 @@
 import { useState, ChangeEvent } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { uploadDataset } from '../services/dataset.service';
 import { Loading } from './ui/Loading';
@@ -7,6 +7,7 @@ import { Card } from './ui/Card';
 
 export function UploadFileForm(): JSX.Element {
   const [isLoading, setLoading] = useState(false);
+  const { id } = useParams<{ id: string }>();
 
   const history = useHistory();
 
@@ -21,7 +22,7 @@ export function UploadFileForm(): JSX.Element {
 
         console.log(response);
 
-        history.push(`/`);
+        history.push(`/user/${id}/dashboards/${response.id}/columns`);
       } catch (error) {
         console.log(error);
       }
