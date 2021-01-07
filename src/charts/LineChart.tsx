@@ -11,6 +11,7 @@ function elementId(svgId: string, id: string): string {
 export function LineChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
+  hasSecondAxis: boolean;
   onPress: (data: DatasetChartSpecValues) => void;
 }): JSX.Element {
   const [id] = useState<string>(generateId());
@@ -57,6 +58,12 @@ export function LineChart(props: {
       .x((d) => xScale(new Date(d.name)))
       .y((d) => yScale(d.value));
 
+    const lineGenerator2 = d3
+      .line<DatasetChartSpecValues>()
+      .defined((d) => !isNaN(d.value))
+      .x((d) => xScale(new Date(d.name)))
+      .y((d) => yScale(d.value2));
+
     groupData
       .append('path')
       .datum(props.data)
@@ -68,6 +75,20 @@ export function LineChart(props: {
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round');
+
+    if (props.hasSecondAxis) {
+      groupData
+        .append('path')
+        .datum(props.data)
+        .attr('d', lineGenerator2)
+        .attr('width', width)
+        .attr('height', height)
+        .attr('fill', 'none')
+        .attr('stroke', 'red')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round');
+    }
 
     groupAxis
       .append('g')

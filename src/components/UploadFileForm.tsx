@@ -18,7 +18,7 @@ export function UploadFileForm(): JSX.Element {
       try {
         setLoading(true);
 
-        const response = await uploadDataset(event.target.files[0]);
+        const response = await uploadDataset(id, event.target.files[0]);
 
         console.log(response);
 

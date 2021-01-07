@@ -3,7 +3,7 @@ import { formatRelative } from 'date-fns';
 import { Link, useParams } from 'react-router-dom';
 
 import { getAll, remove } from '../services/dataset.service';
-import { DatasetInterface, DatasetColumnRole } from '@junoapp/common';
+import { DatasetInterface, DatasetColumnRole, DashboardInterface } from '@junoapp/common';
 import { Alert } from './ui/Alert';
 import { Loading } from './ui/Loading';
 import { Card } from './ui/Card';
@@ -11,7 +11,7 @@ import { Badge } from './ui/Badge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export function DatasetsList(): JSX.Element {
-  const [datasets, setDatasets] = useState<DatasetInterface[]>([]);
+  const [datasets, setDatasets] = useState<DashboardInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,7 @@ export function DatasetsList(): JSX.Element {
   const load = () => {
     setIsLoading(true);
 
-    getAll().then((datasets) => {
+    getAll(+id).then((datasets) => {
       setDatasets(datasets);
       setIsLoading(false);
     });
@@ -63,29 +63,29 @@ export function DatasetsList(): JSX.Element {
 
       {!isLoading &&
         datasets.length > 0 &&
-        datasets.map((dataset: DatasetInterface) => (
-          <div key={dataset['id']} className="w-1/3 px-4 mb-4">
-            <Card title={dataset.originalname}>
+        datasets.map((dashboard: DashboardInterface) => (
+          <div key={dashboard.id} className="w-1/3 px-4 mb-4">
+            <Card title={dashboard.name}>
               <div className="flex flex-col items-start">
                 <Badge>CSV</Badge>
-                {countColumns(dataset, DatasetColumnRole.MEASURE)}
-                {countColumns(dataset, DatasetColumnRole.DIMENSION)}
+                {countColumns(dashboard.datasets[0], DatasetColumnRole.MEASURE)}
+                {countColumns(dashboard.datasets[0], DatasetColumnRole.DIMENSION)}
                 <span className="text-gray-600 text-xs mb-2">
-                  Updated {formatRelative(new Date(dataset.updatedDate), new Date())}
+                  Updated {formatRelative(new Date(dashboard.updatedDate), new Date())}
                   <br />
-                  Created {formatRelative(new Date(dataset.createdDate), new Date())}
+                  Created {formatRelative(new Date(dashboard.createdDate), new Date())}
                 </span>
               </div>
               <div className="flex">
                 <Link
-                  to={`/user/${id}/dashboards/${dataset.id}/view`}
+                  to={`/user/${id}/dashboards/${dashboard.id}/view`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="eye" />
                   View
                 </Link>
                 <Link
-                  to={`/user/${id}/dashboards/${dataset.id}/columns`}
+                  to={`/user/${id}/dashboards/${dashboard.id}/columns`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="pencil-alt" />
@@ -94,7 +94,7 @@ export function DatasetsList(): JSX.Element {
                 <button
                   type="button"
                   className="button button-danger button-small"
-                  onClick={() => onDeleteHandler(dataset.id)}
+                  onClick={() => onDeleteHandler(dashboard.id)}
                 >
                   <FontAwesomeIcon icon="trash" />
                   Delete

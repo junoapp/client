@@ -52,9 +52,9 @@ export function UserAdd(): JSX.Element {
                 name="visLiteracy"
                 label="Vis Literacy"
                 options={[
-                  { value: 'low', label: 'Low' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'high', label: 'High' },
+                  { value: 'LOW', label: 'Low' },
+                  { value: 'MEDIUM', label: 'Medium' },
+                  { value: 'HIGH', label: 'High' },
                 ]}
                 formik={formik}
               />

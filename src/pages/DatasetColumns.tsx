@@ -11,6 +11,7 @@ import { Input } from '../components/form/Input';
 import { Select } from '../components/form/Select';
 import { UploadInfoField } from '../models/upload-info';
 import { DropdownOption } from '../models/dropdown-option';
+import { DashboardGoal, DashboardPurpose, DatasetColumnRole } from '@junoapp/common';
 
 export function DatasetColumns(): JSX.Element {
   const [isLoading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ export function DatasetColumns(): JSX.Element {
       const formFields: UploadInfoField[] = [];
       const indexes: DropdownOption[] = [];
 
-      response.columns.forEach((field, index) => {
+      response.datasets[0].columns.forEach((field, index) => {
         formFields.push({
           id: field.id,
           name: field.name,
@@ -47,10 +48,10 @@ export function DatasetColumns(): JSX.Element {
         });
       });
 
-      setName(response.originalname);
+      setName(response.datasets[0].originalname);
       setLoading(false);
       setValues({
-        name: response.originalname,
+        name: response.datasets[0].originalname,
         type: '',
         purpose: '',
         fields: formFields,
@@ -79,11 +80,21 @@ export function DatasetColumns(): JSX.Element {
               enableReinitialize={true}
               initialValues={values}
               onSubmit={async (values) => {
-                const fields = values.fields.map((f, i) => ({ ...f, index: i }));
+                const fields = values.fields.map((f, i) => ({
+                  ...f,
+                  index: i,
+                  role: f.role as DatasetColumnRole,
+                }));
                 console.log(values, fields);
-                // setLoading(true);
-                // await updateColumns(+id, fields);
-                // backToHome();
+                setLoading(true);
+                await updateColumns(+id, {
+                  id: +id,
+                  name: values.name,
+                  goal: values.type as DashboardGoal,
+                  purpose: values.purpose as DashboardPurpose,
+                  colums: fields,
+                });
+                backToHome();
               }}
             >
               {({ getFieldProps, values }) => (

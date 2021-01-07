@@ -1,13 +1,12 @@
 import ky from 'ky';
 
-import { UploadInfoField } from '../models/upload-info';
-import { DatasetInterface } from '@junoapp/common';
+import { DashboardInterface, DashboardUpdate, DatasetInterface } from '@junoapp/common';
 
-export async function getAll(): Promise<DatasetInterface[]> {
-  return ky.get('http://localhost:3001/api/dataset').json();
+export async function getAll(userId: number): Promise<DashboardInterface[]> {
+  return ky.get(`http://localhost:3001/api/dataset/user/${userId}`).json();
 }
 
-export async function getById(id: number): Promise<DatasetInterface> {
+export async function getById(id: number): Promise<DashboardInterface> {
   return ky.get(`http://localhost:3001/api/dataset/${id}`).json();
 }
 
@@ -15,9 +14,10 @@ export async function getSpec(datasetId: number): Promise<any[]> {
   return ky.get(`http://localhost:3001/api/dashboard/${datasetId}/spec`).json();
 }
 
-export async function uploadDataset(file: File): Promise<DatasetInterface> {
+export async function uploadDataset(userId: string, file: File): Promise<DatasetInterface> {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('user', userId);
 
   return ky
     .post('http://localhost:3001/api/dataset/upload', {
@@ -26,7 +26,7 @@ export async function uploadDataset(file: File): Promise<DatasetInterface> {
     .json();
 }
 
-export async function updateColumns(id: number, fields: UploadInfoField[]): Promise<Response> {
+export async function updateColumns(id: number, fields: DashboardUpdate): Promise<Response> {
   return ky.put(`http://localhost:3001/api/dataset/${id}/columns`, {
     json: fields,
   });
