@@ -1,12 +1,12 @@
 import ky from 'ky';
 
-import { DashboardInterface, DashboardUpdate, DatasetInterface } from '@junoapp/common';
+import { DashboardUpdate, DatasetInterface } from '@junoapp/common';
 
-export async function getAll(userId: number): Promise<DashboardInterface[]> {
-  return ky.get(`http://localhost:3001/api/dataset/user/${userId}`).json();
+export async function getAll(): Promise<DatasetInterface[]> {
+  return ky.get(`http://localhost:3001/api/dataset`).json();
 }
 
-export async function getById(id: number): Promise<DashboardInterface> {
+export async function getById(id: number): Promise<DatasetInterface> {
   return ky.get(`http://localhost:3001/api/dataset/${id}`).json();
 }
 
@@ -27,7 +27,7 @@ export async function uploadDataset(userId: string, file: File): Promise<Dataset
 }
 
 export async function updateColumns(id: number, fields: DashboardUpdate): Promise<Response> {
-  return ky.put(`http://localhost:3001/api/dataset/${id}/columns`, {
+  return ky.post(`http://localhost:3001/api/dashboard/${id}`, {
     json: fields,
   });
 }

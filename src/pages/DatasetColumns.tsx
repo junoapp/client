@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useParams, useHistory } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { Select } from '../components/form/Select';
 import { UploadInfoField } from '../models/upload-info';
 import { DropdownOption } from '../models/dropdown-option';
 import { DashboardGoal, DashboardPurpose, DatasetColumnRole } from '@junoapp/common';
+import { UserContext } from '../contexts/user.context';
 
 export function DatasetColumns(): JSX.Element {
   const [isLoading, setLoading] = useState(false);
@@ -26,6 +27,7 @@ export function DatasetColumns(): JSX.Element {
 
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     setLoading(true);
@@ -33,12 +35,13 @@ export function DatasetColumns(): JSX.Element {
       const formFields: UploadInfoField[] = [];
       const indexes: DropdownOption[] = [];
 
-      response.datasets[0].columns.forEach((field, index) => {
+      response.columns.forEach((field, index) => {
         formFields.push({
           id: field.id,
           name: field.name,
           role: field.role,
           index,
+          removed: false,
         });
 
         indexes.push({
@@ -48,10 +51,10 @@ export function DatasetColumns(): JSX.Element {
         });
       });
 
-      setName(response.datasets[0].originalname);
+      setName(response.originalname);
       setLoading(false);
       setValues({
-        name: response.datasets[0].originalname,
+        name: response.originalname,
         type: '',
         purpose: '',
         fields: formFields,
@@ -90,6 +93,7 @@ export function DatasetColumns(): JSX.Element {
                 await updateColumns(+id, {
                   id: +id,
                   name: values.name,
+                  user: +user,
                   goal: values.type as DashboardGoal,
                   purpose: values.purpose as DashboardPurpose,
                   colums: fields,
@@ -97,7 +101,7 @@ export function DatasetColumns(): JSX.Element {
                 backToHome();
               }}
             >
-              {({ getFieldProps, values }) => (
+              {({ getFieldProps, values, setFieldValue }) => (
                 <Form>
                   <div className="flex -mx-4 bg-white">
                     <div className="px-4 w-1/3">
@@ -176,7 +180,9 @@ export function DatasetColumns(): JSX.Element {
                                           <button
                                             type="button"
                                             className="button button-danger"
-                                            onClick={() => remove(index)}
+                                            onClick={() =>
+                                              setFieldValue(`fields.${index}.removed`, true)
+                                            }
                                           >
                                             <FontAwesomeIcon icon="times" />
                                           </button>

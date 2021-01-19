@@ -1,13 +1,14 @@
-import { useState, ChangeEvent } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useState, ChangeEvent, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { uploadDataset } from '../services/dataset.service';
 import { Loading } from './ui/Loading';
 import { Card } from './ui/Card';
+import { UserContext } from '../contexts/user.context';
 
 export function UploadFileForm(): JSX.Element {
+  const { user } = useContext(UserContext);
   const [isLoading, setLoading] = useState(false);
-  const { id } = useParams<{ id: string }>();
 
   const history = useHistory();
 
@@ -18,11 +19,9 @@ export function UploadFileForm(): JSX.Element {
       try {
         setLoading(true);
 
-        const response = await uploadDataset(id, event.target.files[0]);
+        const response = await uploadDataset(user, event.target.files[0]);
 
-        console.log(response);
-
-        history.push(`/user/${id}/dashboards/${response.id}/columns`);
+        history.push(`/dataset/${response.id}/columns`);
       } catch (error) {
         console.log(error);
       }

@@ -35,7 +35,7 @@ export function Dashboard(): JSX.Element {
 
         for (const datum of data) {
           if (
-            dashboard.user.visLiteracy !== UserVisLiteracy.low &&
+            // dashboard.user.visLiteracy !== UserVisLiteracy.Low &&
             data.length > 2 &&
             data[0].mark === 'line' &&
             data[1].mark === 'line' &&

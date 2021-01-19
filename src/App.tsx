@@ -22,22 +22,22 @@ function App(): JSX.Element {
 
           <div className="container mx-auto pt-4 mb-8">
             <Switch>
-              <Route path="/user/add">
+              <Route exact path="/user/add">
                 <UserAdd />
               </Route>
-              <Route path="/user/:id/dashboards/add">
+              <Route exact path="/dataset/add">
                 <UploadFileForm />
               </Route>
-              <Route path="/user/:id/dashboards/:id/columns">
+              <Route exact path="/dashboard/add/:id">
                 <DatasetColumns />
               </Route>
-              <Route path="/user/:id/dashboards/:id/view">
+              <Route exact path="/dataset/:id/view">
                 <Dashboard />
               </Route>
-              <Route path="/user/:id/dashboards">
+              <Route exact path="/user/:id">
                 <UserView />
               </Route>
-              <Route path="/">
+              <Route exact path="/">
                 <Home />
               </Route>
             </Switch>

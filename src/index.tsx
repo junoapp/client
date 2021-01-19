@@ -5,10 +5,13 @@ import './index.css';
 import './tailwind.css';
 
 import App from './App';
+import { UserProvider } from './contexts/user.context';
 
 ReactDOM.render(
   <StrictMode>
-    <App />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </StrictMode>,
   document.getElementById('root')
 );

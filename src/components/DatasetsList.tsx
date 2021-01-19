@@ -11,7 +11,7 @@ import { Badge } from './ui/Badge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export function DatasetsList(): JSX.Element {
-  const [datasets, setDatasets] = useState<DashboardInterface[]>([]);
+  const [datasets, setDatasets] = useState<DatasetInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,7 @@ export function DatasetsList(): JSX.Element {
   const load = () => {
     setIsLoading(true);
 
-    getAll(+id).then((datasets) => {
+    getAll().then((datasets) => {
       setDatasets(datasets);
       setIsLoading(false);
     });
@@ -63,42 +63,42 @@ export function DatasetsList(): JSX.Element {
 
       {!isLoading &&
         datasets.length > 0 &&
-        datasets.map((dashboard: DashboardInterface) => (
-          <div key={dashboard.id} className="w-1/3 px-4 mb-4">
-            <Card title={dashboard.name}>
+        datasets.map((dataset: DatasetInterface) => (
+          <div key={dataset.id} className="w-1/3 px-4 mb-4">
+            <Card title={dataset.originalname}>
               <div className="flex flex-col items-start">
                 <Badge>CSV</Badge>
-                {countColumns(dashboard.datasets[0], DatasetColumnRole.MEASURE)}
-                {countColumns(dashboard.datasets[0], DatasetColumnRole.DIMENSION)}
+                {countColumns(dataset, DatasetColumnRole.MEASURE)}
+                {countColumns(dataset, DatasetColumnRole.DIMENSION)}
                 <span className="text-gray-600 text-xs mb-2">
-                  Updated {formatRelative(new Date(dashboard.updatedDate), new Date())}
+                  Updated {formatRelative(new Date(dataset.updatedDate), new Date())}
                   <br />
-                  Created {formatRelative(new Date(dashboard.createdDate), new Date())}
+                  Created {formatRelative(new Date(dataset.createdDate), new Date())}
                 </span>
               </div>
               <div className="flex">
-                <Link
-                  to={`/user/${id}/dashboards/${dashboard.id}/view`}
+                {/* <Link
+                  to={`/user/${id}/dashboards/${dataset.id}/view`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="eye" />
                   View
-                </Link>
+                </Link> */}
                 <Link
-                  to={`/user/${id}/dashboards/${dashboard.id}/columns`}
+                  to={`/dashboard/add/${dataset.id}`}
                   className="button button-primary button-small mr-2"
                 >
-                  <FontAwesomeIcon icon="pencil-alt" />
-                  Edit
+                  <FontAwesomeIcon icon="pencil-alt" className="mr-1" />
+                  Create new dashboard
                 </Link>
-                <button
+                {/* <button
                   type="button"
                   className="button button-danger button-small"
-                  onClick={() => onDeleteHandler(dashboard.id)}
+                  onClick={() => onDeleteHandler(dataset.id)}
                 >
                   <FontAwesomeIcon icon="trash" />
                   Delete
-                </button>
+                </button> */}
               </div>
             </Card>
           </div>
