@@ -29,9 +29,12 @@ function App(): JSX.Element {
                 <UploadFileForm />
               </Route>
               <Route exact path="/dashboard/add/:id">
-                <DatasetColumns />
+                <DatasetColumns action="add" />
               </Route>
-              <Route exact path="/dataset/:id/view">
+              <Route exact path="/dashboard/:id/edit">
+                <DatasetColumns action="edit" />
+              </Route>
+              <Route exact path="/dashboard/view/:id">
                 <Dashboard />
               </Route>
               <Route exact path="/user/:id">

@@ -21,7 +21,7 @@ export function UploadFileForm(): JSX.Element {
 
         const response = await uploadDataset(user, event.target.files[0]);
 
-        history.push(`/dataset/${response.id}/columns`);
+        history.push(`/dashboard/add/${response.id}`);
       } catch (error) {
         console.log(error);
       }

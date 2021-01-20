@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useParams, useHistory } from 'react-router-dom';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
-import { updateColumns, getById } from '../services/dataset.service';
+import { getById } from '../services/dataset.service';
+import * as dashboardService from '../services/dashboard.service';
 import { Loading } from '../components/ui/Loading';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/form/Input';
@@ -14,7 +15,7 @@ import { DropdownOption } from '../models/dropdown-option';
 import { DashboardGoal, DashboardPurpose, DatasetColumnRole } from '@junoapp/common';
 import { UserContext } from '../contexts/user.context';
 
-export function DatasetColumns(): JSX.Element {
+export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Element {
   const [isLoading, setLoading] = useState(false);
   const [values, setValues] = useState<{
     name: string;
@@ -31,39 +32,72 @@ export function DatasetColumns(): JSX.Element {
 
   useEffect(() => {
     setLoading(true);
-    getById(+id).then((response) => {
-      const formFields: UploadInfoField[] = [];
-      const indexes: DropdownOption[] = [];
+    if (action === 'add') {
+      getById(+id).then((response) => {
+        const formFields: UploadInfoField[] = [];
+        const indexes: DropdownOption[] = [];
 
-      response.columns.forEach((field, index) => {
-        formFields.push({
-          id: field.id,
-          name: field.name,
-          role: field.role,
-          index,
-          removed: false,
+        response.columns.forEach((field, index) => {
+          formFields.push({
+            id: field.id,
+            name: field.name,
+            role: field.role,
+            index,
+            removed: false,
+          });
+
+          indexes.push({
+            label: index.toString(),
+            value: index.toString(),
+            isDisabled: false,
+          });
         });
 
-        indexes.push({
-          label: index.toString(),
-          value: index.toString(),
-          isDisabled: false,
+        setName(response.originalname);
+        setLoading(false);
+        setValues({
+          name: response.originalname,
+          type: '',
+          purpose: '',
+          fields: formFields,
         });
       });
+    } else {
+      dashboardService.getById(+id).then((response) => {
+        const formFields: UploadInfoField[] = [];
+        const indexes: DropdownOption[] = [];
 
-      setName(response.originalname);
-      setLoading(false);
-      setValues({
-        name: response.originalname,
-        type: '',
-        purpose: '',
-        fields: formFields,
+        response.userDatasets[0].columns.forEach((field, index) => {
+          formFields.push({
+            id: field.id,
+            originalName: field.column.name,
+            name: field.name,
+            role: field.role,
+            index,
+            removed: field.removed,
+          });
+
+          indexes.push({
+            label: index.toString(),
+            value: index.toString(),
+            isDisabled: false,
+          });
+        });
+
+        setName(response.name);
+        setLoading(false);
+        setValues({
+          name: response.name,
+          type: response.goalType,
+          purpose: response.goalPurpose,
+          fields: formFields,
+        });
       });
-    });
+    }
   }, [id]);
 
   const backToHome = () => {
-    history.goBack();
+    history.replace(`/user/${user}`);
   };
 
   const onDragEnd = (result: DropResult, swap: (indexA: number, indexB: number) => void) => {
@@ -90,14 +124,25 @@ export function DatasetColumns(): JSX.Element {
                 }));
                 console.log(values, fields);
                 setLoading(true);
-                await updateColumns(+id, {
-                  id: +id,
-                  name: values.name,
-                  user: +user,
-                  goal: values.type as DashboardGoal,
-                  purpose: values.purpose as DashboardPurpose,
-                  colums: fields,
-                });
+                if (action === 'add') {
+                  await dashboardService.save({
+                    datasetId: +id,
+                    name: values.name,
+                    user: +user,
+                    goal: values.type as DashboardGoal,
+                    purpose: values.purpose as DashboardPurpose,
+                    colums: fields,
+                  });
+                } else {
+                  await dashboardService.update({
+                    id: +id,
+                    name: values.name,
+                    user: +user,
+                    goal: values.type as DashboardGoal,
+                    purpose: values.purpose as DashboardPurpose,
+                    colums: fields,
+                  });
+                }
                 backToHome();
               }}
             >
@@ -156,13 +201,18 @@ export function DatasetColumns(): JSX.Element {
                                         <div className="px-4 flex items-center">
                                           <FontAwesomeIcon icon="bars" />
                                         </div>
-                                        <div className="px-4 w-1/5">{index}</div>
+                                        <div
+                                          className={`px-4 w-1/5 ${
+                                            item.removed ? 'line-through' : ''
+                                          }`}
+                                        >
+                                          {index}
+                                        </div>
                                         <div className="px-4 w-2/5">
                                           <Input
                                             name={`fields.${index}.name`}
                                             label={`Name`}
                                             formik={{ getFieldProps }}
-                                            disabled
                                           />
                                         </div>
                                         <div className="px-4 w-2/5">
@@ -179,12 +229,19 @@ export function DatasetColumns(): JSX.Element {
                                         <div className="px-4 flex items-center">
                                           <button
                                             type="button"
-                                            className="button button-danger"
+                                            className={`button ${
+                                              item.removed ? 'button-success' : 'button-danger'
+                                            }`}
                                             onClick={() =>
-                                              setFieldValue(`fields.${index}.removed`, true)
+                                              setFieldValue(
+                                                `fields.${index}.removed`,
+                                                !values.fields[index].removed
+                                              )
                                             }
                                           >
-                                            <FontAwesomeIcon icon="times" />
+                                            <FontAwesomeIcon
+                                              icon={item.removed ? 'plus' : 'times'}
+                                            />
                                           </button>
                                         </div>
                                       </div>

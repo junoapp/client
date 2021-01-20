@@ -7,7 +7,8 @@ import {
   DashboardInterface,
   UserVisLiteracy,
 } from '@junoapp/common';
-import { getById, getSpec } from '../services/dataset.service';
+import { getById } from '../services/dashboard.service';
+import { getSpec } from '../services/dashboard-recommendation.service';
 
 import { LineChart } from '../charts/LineChart';
 import { HorizontalBarChart } from '../charts/HorizontalBarChart';
@@ -35,7 +36,7 @@ export function Dashboard(): JSX.Element {
 
         for (const datum of data) {
           if (
-            // dashboard.user.visLiteracy !== UserVisLiteracy.Low &&
+            dashboard.userDatasets[0].owner.visLiteracy !== UserVisLiteracy.Low &&
             data.length > 2 &&
             data[0].mark === 'line' &&
             data[1].mark === 'line' &&

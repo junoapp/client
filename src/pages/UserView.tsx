@@ -1,5 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { DashboardList } from '../components/DashboardList';
 
 import { DatasetsList } from '../components/DatasetsList';
 import { UserContext } from '../contexts/user.context';
@@ -20,17 +21,21 @@ export function UserView(): JSX.Element {
         </Link>
       </div>
 
-      <div className="text-lg mt-3">Public datasets</div>
+      <div className="text-lg mt-3">My dashboards</div>
+
+      <hr />
+
+      <div className="mt-5">
+        <DashboardList />
+      </div>
+
+      <div className="text-lg">Public datasets</div>
 
       <hr />
 
       <div className="mt-5">
         <DatasetsList />
       </div>
-
-      <div className="text-lg">My dashboards</div>
-
-      <hr />
     </div>
   );
 }
