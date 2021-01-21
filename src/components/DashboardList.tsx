@@ -30,7 +30,9 @@ export function DashboardList(): JSX.Element {
   }, []);
 
   const countColumns = (dataset: DashboardInterface, type: DatasetColumnRole): React.ReactNode => {
-    const count = dataset.userDatasets[0].columns.filter((column) => column.role === type).length;
+    const count = dataset.userDatasets[0].columns.filter(
+      (column) => column.role === type && !column.removed
+    ).length;
 
     if (count > 0) {
       return (

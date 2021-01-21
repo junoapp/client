@@ -5,4 +5,5 @@ export type UploadInfoField = {
   index: number;
   role?: 'measure' | 'dimension';
   removed: boolean;
+  type: string;
 };

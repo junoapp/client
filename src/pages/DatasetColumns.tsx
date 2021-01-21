@@ -40,10 +40,12 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
         response.columns.forEach((field, index) => {
           formFields.push({
             id: field.id,
+            originalName: field.name,
             name: field.name,
             role: field.role,
             index,
             removed: false,
+            type: field.type,
           });
 
           indexes.push({
@@ -75,6 +77,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
             role: field.role,
             index,
             removed: field.removed,
+            type: field.column.type,
           });
 
           indexes.push({
@@ -201,18 +204,27 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                                         <div className="px-4 flex items-center">
                                           <FontAwesomeIcon icon="bars" />
                                         </div>
-                                        <div
-                                          className={`px-4 w-1/5 ${
-                                            item.removed ? 'line-through' : ''
-                                          }`}
-                                        >
-                                          {index}
+                                        <div className="px-4 w-2/5">
+                                          <Input
+                                            name={`fields.${index}.originalName`}
+                                            label={`Original Name`}
+                                            formik={{ getFieldProps }}
+                                            disabled
+                                          />
                                         </div>
                                         <div className="px-4 w-2/5">
                                           <Input
                                             name={`fields.${index}.name`}
                                             label={`Name`}
                                             formik={{ getFieldProps }}
+                                          />
+                                        </div>
+                                        <div className="px-4 w-2/5">
+                                          <Input
+                                            name={`fields.${index}.type`}
+                                            label={`Type`}
+                                            formik={{ getFieldProps }}
+                                            disabled
                                           />
                                         </div>
                                         <div className="px-4 w-2/5">
