@@ -1,3 +1,5 @@
+import { DatasetSchemaAggregateFunction } from '@junoapp/common';
+
 export type UploadInfoField = {
   id: number;
   originalName?: string;
@@ -6,4 +8,5 @@ export type UploadInfoField = {
   role?: 'measure' | 'dimension';
   removed: boolean;
   type: string;
+  aggregate: DatasetSchemaAggregateFunction;
 };

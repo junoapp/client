@@ -3,12 +3,13 @@ import * as d3 from 'd3';
 import { DatasetChartSpecValues } from '@junoapp/common';
 
 import { generateId } from '../utils/functions';
+import { getDay, format, addDays, startOfWeek } from 'date-fns';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
 }
 
-export function LineChart(props: {
+export function Heatmap(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
   onPress: (data: DatasetChartSpecValues) => void;
@@ -23,7 +24,7 @@ export function LineChart(props: {
       right: 80,
     };
 
-    const height = 400;
+    const height = 250;
 
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
     const width = svg.node()?.getBoundingClientRect().width;
@@ -32,48 +33,42 @@ export function LineChart(props: {
     const groupAxis = svg.append('g').attr('id', elementId(id, 'group-axis'));
 
     const xAcessor = (d: DatasetChartSpecValues) => new Date(d.name);
-    const yAcessor = (d: DatasetChartSpecValues) => d.value;
 
-    const valueMax = d3.max(props.data, yAcessor);
+    const max = d3.max(props.data, (d) => d.value);
 
-    const extent = d3.extent(props.data, xAcessor);
+    const dayOfWeeks = Array.from(Array(7)).map((e, i) =>
+      format(addDays(startOfWeek(new Date()), i), 'E')
+    );
+
+    const formatWeeek = (d: DatasetChartSpecValues) => format(startOfWeek(xAcessor(d)), 'w-yyyy');
+
+    const weeks = [...new Set(props.data.map((d) => formatWeeek(d)))];
 
     const xScale = d3
-      .scaleTime()
-      .domain(extent)
-      .range([margin.left, width - margin.right]);
+      .scaleBand()
+      .domain(weeks)
+      .range([margin.left, width - margin.right])
+      .padding(0.1);
 
     const yScale = d3
-      .scaleLinear()
-      .domain([0, valueMax])
-      .range([height - margin.bottom, margin.top]);
-
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
-
-    const lineGenerator = d3
-      .line<DatasetChartSpecValues>()
-      .defined((d) => !isNaN(d.value))
-      .x((d) => xScale(new Date(d.name)))
-      .y((d) => yScale(d.value));
-
-    const lineGenerator2 = d3
-      .line<DatasetChartSpecValues>()
-      .defined((d) => !isNaN(d.value))
-      .x((d) => xScale(new Date(d.name)))
-      .y((d) => yScale(d.value2));
+      .scaleBand()
+      .range([height - margin.bottom, margin.top])
+      .domain(dayOfWeeks)
+      .padding(0.1);
 
     groupData
-      .append('path')
-      .datum(props.data)
-      .attr('d', lineGenerator)
-      .attr('width', width)
-      .attr('height', height)
-      .attr('fill', 'none')
-      .attr('stroke', 'steelblue')
-      .attr('stroke-width', 1.5)
-      .attr('stroke-linejoin', 'round')
-      .attr('stroke-linecap', 'round');
+      .selectAll('rect')
+      .data(props.data.filter((d) => !isNaN(d.value)))
+      .enter()
+      .append('rect')
+      .attr('x', (d) => xScale(formatWeeek(d)))
+      .attr('y', (d) => yScale(dayOfWeeks[getDay(xAcessor(d))]))
+      .attr('width', xScale.bandwidth())
+      .attr('height', yScale.bandwidth())
+      .attr('fill', (d) => d3.interpolateBlues(d.value / max));
+
+    const xAxis = d3.axisBottom(xScale).tickValues(xScale.domain().filter((d, i) => !(i % 3)));
+    const yAxis = d3.axisLeft(yScale);
 
     groupAxis
       .append('g')

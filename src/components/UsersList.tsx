@@ -61,7 +61,10 @@ export function UsersList(): JSX.Element {
                 </span>
               </div>
               <div className="flex">
-                <Link to={`user/${user.id}`} className="button button-primary button-small mr-2">
+                <Link
+                  to={`user/view/${user.id}`}
+                  className="button button-primary button-small mr-2"
+                >
                   <FontAwesomeIcon icon="eye" />
                   Login
                 </Link>

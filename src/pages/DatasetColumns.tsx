@@ -14,6 +14,7 @@ import { UploadInfoField } from '../models/upload-info';
 import { DropdownOption } from '../models/dropdown-option';
 import { DashboardGoal, DashboardPurpose, DatasetColumnRole } from '@junoapp/common';
 import { UserContext } from '../contexts/user.context';
+import { DatasetSchemaAggregateFunction } from '@junoapp/common';
 
 export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Element {
   const [isLoading, setLoading] = useState(false);
@@ -46,6 +47,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
             index,
             removed: false,
             type: field.type,
+            aggregate:
+              field.role === DatasetColumnRole.MEASURE
+                ? DatasetSchemaAggregateFunction.Sum
+                : DatasetSchemaAggregateFunction.None,
           });
 
           indexes.push({
@@ -78,6 +83,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
             index,
             removed: field.removed,
             type: field.column.type,
+            aggregate: field.aggregate,
           });
 
           indexes.push({
@@ -97,10 +103,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
         });
       });
     }
-  }, [id]);
+  }, [id, action]);
 
   const backToHome = () => {
-    history.replace(`/user/${user}`);
+    history.replace(`/user/view/${user}`);
   };
 
   const onDragEnd = (result: DropResult, swap: (indexA: number, indexB: number) => void) => {
@@ -160,10 +166,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                         name={`type`}
                         label="Goal Type"
                         options={[
-                          { value: 'decisionMaking', label: 'Decision Making' },
-                          { value: 'awareness', label: 'Awareness' },
-                          { value: 'motivationalLearning', label: 'Motivational Learning' },
-                          { value: 'other', label: 'Other' },
+                          { value: 'DECISION_MAKING', label: 'Decision Making' },
+                          { value: 'AWARENESS', label: 'Awareness' },
+                          { value: 'MOTIVATIONAL_LEARNING', label: 'Motivational Learning' },
+                          { value: 'OTHER', label: 'Other' },
                         ]}
                         formik={{ getFieldProps }}
                       />
@@ -173,10 +179,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                         name={`purpose`}
                         label="Goal Purpose"
                         options={[
-                          { value: 'strategic', label: 'Strategic' },
-                          { value: 'operational', label: 'Operational' },
-                          { value: 'organizational', label: 'Organizational' },
-                          { value: 'learning', label: 'Learning' },
+                          { value: 'STRATEGIC', label: 'Strategic' },
+                          { value: 'OPERATIONAL', label: 'Operational' },
+                          { value: 'ORGANIZATIONAL', label: 'Organizational' },
+                          { value: 'LEARNING', label: 'Learning' },
                         ]}
                         formik={{ getFieldProps }}
                       />
@@ -206,16 +212,8 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                                         </div>
                                         <div className="px-4 w-2/5">
                                           <Input
-                                            name={`fields.${index}.originalName`}
-                                            label={`Original Name`}
-                                            formik={{ getFieldProps }}
-                                            disabled
-                                          />
-                                        </div>
-                                        <div className="px-4 w-2/5">
-                                          <Input
                                             name={`fields.${index}.name`}
-                                            label={`Name`}
+                                            label={`Name (${values.fields[index].originalName})`}
                                             formik={{ getFieldProps }}
                                           />
                                         </div>
@@ -236,6 +234,23 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                                               { value: 'dimension', label: 'Dimension' },
                                             ]}
                                             formik={{ getFieldProps }}
+                                          />
+                                        </div>
+                                        <div className="px-4 w-2/5">
+                                          <Select
+                                            name={`fields.${index}.aggregate`}
+                                            label="Aggregate"
+                                            options={[
+                                              { value: 'NONE', label: 'None' },
+                                              { value: 'MIN', label: 'Min' },
+                                              { value: 'MEAN', label: 'Mean' },
+                                              { value: 'SUM', label: 'Sum' },
+                                              { value: 'BIN', label: 'Bin' },
+                                              { value: 'MAX', label: 'Max' },
+                                              { value: 'MEDIAN', label: 'Median' },
+                                            ]}
+                                            formik={{ getFieldProps }}
+                                            disabled={values.fields[index].role === 'dimension'}
                                           />
                                         </div>
                                         <div className="px-4 flex items-center">

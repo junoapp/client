@@ -6,11 +6,13 @@ export function Select({
   label,
   options,
   formik,
+  disabled,
 }: {
   name: string;
   label: string;
   options: Array<DropdownOption>;
   formik: { getFieldProps: (name: string) => FieldInputProps<any> };
+  disabled?: boolean;
 }): JSX.Element {
   return (
     <div>
@@ -18,7 +20,7 @@ export function Select({
         {label}
       </label>
       <div className="relative">
-        <select className="select" id={name} {...formik.getFieldProps(name)}>
+        <select className="select" id={name} {...formik.getFieldProps(name)} disabled={disabled}>
           <option value="">Select a {label.toLowerCase()}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value} disabled={option.isDisabled || false}>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,6 +8,7 @@ import { Dashboard } from './pages/Dashboard';
 import { UserAdd } from './pages/UserAdd';
 import { UserView } from './pages/UserView';
 import { UploadFileForm } from './components/UploadFileForm';
+import Header from './components/Header';
 
 library.add(fas);
 
@@ -15,13 +16,11 @@ function App(): JSX.Element {
   return (
     <div className="App">
       <BrowserRouter>
-        <div>
-          <header className="bg-yellow-500 p-3 text-white text-lg font-bold">
-            <Link to="/">Juno</Link>
-          </header>
+        <Switch>
+          <div>
+            <Header />
 
-          <div className="container mx-auto pt-4 mb-8">
-            <Switch>
+            <div className="container mx-auto pt-4 mb-8">
               <Route exact path="/user/add">
                 <UserAdd />
               </Route>
@@ -37,15 +36,15 @@ function App(): JSX.Element {
               <Route exact path="/dashboard/view/:id">
                 <Dashboard />
               </Route>
-              <Route exact path="/user/:id">
+              <Route exact path="/user/view/:id">
                 <UserView />
               </Route>
               <Route exact path="/">
                 <Home />
               </Route>
-            </Switch>
+            </div>
           </div>
-        </div>
+        </Switch>
       </BrowserRouter>
 
       {/* <div className="border h-12 border-red-600">Toolbar</div>
