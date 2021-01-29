@@ -40,7 +40,8 @@ export function Heatmap(props: {
       format(addDays(startOfWeek(new Date()), i), 'E')
     );
 
-    const formatWeeek = (d: DatasetChartSpecValues) => format(startOfWeek(xAcessor(d)), 'w-yyyy');
+    const formatWeeek = (d: DatasetChartSpecValues) =>
+      format(startOfWeek(xAcessor(d)), 'dd-MM-yyyy');
 
     const weeks = [...new Set(props.data.map((d) => formatWeeek(d)))];
 

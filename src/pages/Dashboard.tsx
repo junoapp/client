@@ -22,10 +22,13 @@ import { InlineData } from 'vega-lite/build/src/data';
 import { VegaLite } from 'react-vega';
 import { MultipleLineChart } from '../charts/MultipleLineChart';
 import { applyClass } from '../utils/functions';
+import { Card } from '../components/ui/Card';
 
 function convert(value: string) {
   return isNaN(+value) ? undefined : +value;
 }
+
+const formatter = new Intl.NumberFormat('pt-BR').format;
 
 export function Dashboard(): JSX.Element {
   const [dashboard, setDashboard] = useState<DashboardRecommendation | undefined>(undefined);
@@ -95,6 +98,18 @@ export function Dashboard(): JSX.Element {
                   value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
                 })),
               });
+            } else if (datum.mark === 'text') {
+              cData.push({
+                page: page.name,
+                type: datum.mark,
+                name: datum.value,
+                values: [
+                  {
+                    name: datum.value,
+                    value: +(datum.data as InlineData).values[0],
+                  },
+                ],
+              });
             } else {
               cData.push({
                 page: page.name,
@@ -146,6 +161,19 @@ export function Dashboard(): JSX.Element {
               {dashboardPage.name}
             </button>
           ))}
+      </div>
+
+      <div className="flex -mx-4 mb-4">
+        {chartData &&
+          chartData
+            .filter((chart) => chart.type === 'text')
+            .map((chart) => (
+              <Card title={chart.name} className="mx-4">
+                <div key={chart.name} className="card">
+                  <h3>{formatter((chart.values[0] as DatasetChartSpecValues).value)}</h3>
+                </div>
+              </Card>
+            ))}
       </div>
 
       {chartData &&
