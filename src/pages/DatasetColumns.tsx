@@ -250,7 +250,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                                               { value: 'MEDIAN', label: 'Median' },
                                             ]}
                                             formik={{ getFieldProps }}
-                                            disabled={values.fields[index].role === 'dimension'}
+                                            disabled={
+                                              values.fields[index].role === 'dimension' ||
+                                              values.fields[index].originalName === 'count'
+                                            }
                                           />
                                         </div>
                                         <div className="px-4 flex items-center">

@@ -57,12 +57,6 @@ export function LineChart(props: {
       .x((d) => xScale(new Date(d.name)))
       .y((d) => yScale(d.value));
 
-    const lineGenerator2 = d3
-      .line<DatasetChartSpecValues>()
-      .defined((d) => !isNaN(d.value))
-      .x((d) => xScale(new Date(d.name)))
-      .y((d) => yScale(d.value2));
-
     groupData
       .append('path')
       .datum(props.data)

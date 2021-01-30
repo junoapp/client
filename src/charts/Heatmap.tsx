@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { DatasetChartSpecValues } from '@junoapp/common';
 
 import { generateId } from '../utils/functions';
-import { getDay, format, addDays, startOfWeek } from 'date-fns';
+import { getDay, format, addDays, startOfWeek, parse, differenceInDays } from 'date-fns';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -41,9 +41,11 @@ export function Heatmap(props: {
     );
 
     const formatWeeek = (d: DatasetChartSpecValues) =>
-      format(startOfWeek(xAcessor(d)), 'dd-MM-yyyy');
+      format(startOfWeek(xAcessor(d)), 'dd/MM/yyyy');
 
     const weeks = [...new Set(props.data.map((d) => formatWeeek(d)))];
+
+    console.log({ weeks });
 
     const xScale = d3
       .scaleBand()
@@ -68,7 +70,40 @@ export function Heatmap(props: {
       .attr('height', yScale.bandwidth())
       .attr('fill', (d) => d3.interpolateBlues(d.value / max));
 
-    const xAxis = d3.axisBottom(xScale).tickValues(xScale.domain().filter((d, i) => !(i % 3)));
+    const extent = d3.extent(props.data, (d) => parse(d.name, 'yyyy/MM/dd', new Date()));
+    const delta = differenceInDays(extent[1], extent[0]);
+
+    // 363 - 3
+    // 2660 - 18
+    /*
+
+    x1 = 363
+    y1 = 3
+
+    x2 = 2660
+    y2 = 18
+    
+    (y1 - y2) x + (x2 - x1) y + x1y2 - x2y1 = 0
+
+    (3 - 18) x + (2660 - 363) y + 363*18 - 266*03 = 0
+    (-15) x + (2297) y + 6534 - 798 = 0
+    -15x + 2297y + 5736 = 0
+    -15x + 2297y = -5736
+
+    //
+
+    (y2 - y1) = m(x2 - x1)
+    (18 - 3) = m(2660 - 363)
+    15 = m * 2297
+    m * 2297 = 15
+    m = 15 / 2297
+    m = 0.006530
+
+    */
+
+    const xAxis = d3
+      .axisBottom(xScale)
+      .tickValues(xScale.domain().filter((d, i) => !(i % Math.ceil(delta * 0.0065))));
     const yAxis = d3.axisLeft(yScale);
 
     groupAxis

@@ -47,7 +47,7 @@ export function HorizontalBarChart(props: {
       .domain(keys)
       .paddingInner(0.1)
       .paddingOuter(0.1)
-      .range([height - margin.bottom, margin.top]);
+      .range([margin.top, height - margin.bottom]);
 
     const colorScale = d3.scaleOrdinal(keys.length > 10 ? ['#3575B1'] : d3.schemeCategory10);
 
@@ -62,7 +62,7 @@ export function HorizontalBarChart(props: {
       .attr('class', 'data-item')
       .attr('x', xScale(0))
       .attr('y', (d) => yScale(d.name))
-      .attr('width', (d) => xScale(d.value))
+      .attr('width', (d) => xScale(d.value) - xScale(0))
       .attr('height', yScale.bandwidth())
       .attr('fill', (d) => colorScale(d.name))
       .attr('pointer-events', 'none');
