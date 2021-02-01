@@ -7,8 +7,8 @@ import { DatasetColumns } from './pages/DatasetColumns';
 import { Dashboard } from './pages/Dashboard';
 import { UserAdd } from './pages/UserAdd';
 import { UserView } from './pages/UserView';
-import { UploadFileForm } from './components/UploadFileForm';
 import Header from './components/Header';
+import { DatasetAdd } from './pages/DatasetAdd';
 
 library.add(fas);
 
@@ -25,7 +25,7 @@ function App(): JSX.Element {
                 <UserAdd />
               </Route>
               <Route exact path="/dataset/add">
-                <UploadFileForm />
+                <DatasetAdd />
               </Route>
               <Route exact path="/dashboard/add/:id">
                 <DatasetColumns action="add" />

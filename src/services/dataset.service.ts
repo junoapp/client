@@ -1,6 +1,6 @@
 import ky from 'ky';
 
-import { DashboardUpdate, DatasetInterface } from '@junoapp/common';
+import { DashboardUpdate, DatasetConnectionDatabase, DatasetInterface } from '@junoapp/common';
 
 export async function getAll(): Promise<DatasetInterface[]> {
   return ky.get(`http://localhost:3001/api/dataset`).json();
@@ -30,6 +30,16 @@ export async function updateColumns(id: number, fields: DashboardUpdate): Promis
   return ky.post(`http://localhost:3001/api/dashboard/${id}`, {
     json: fields,
   });
+}
+
+export async function connectDatabase(
+  fields: DatasetConnectionDatabase
+): Promise<DatasetInterface> {
+  return ky
+    .post(`http://localhost:3001/api/dataset/database/connect`, {
+      json: fields,
+    })
+    .json();
 }
 
 export async function remove(id: number): Promise<Response> {
