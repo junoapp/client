@@ -23,6 +23,7 @@ import { VegaLite } from 'react-vega';
 import { MultipleLineChart } from '../charts/MultipleLineChart';
 import { applyClass } from '../utils/functions';
 import { Card } from '../components/ui/Card';
+import MapChart from '../charts/MapChart';
 
 function convert(value: string) {
   return isNaN(+value) ? undefined : +value;
@@ -181,6 +182,10 @@ export function Dashboard(): JSX.Element {
           .filter((chart) => chart.page === page)
           .map((chart) => (
             <div key={chart.name}>
+              {chart.type === 'geoshape' && (
+                <MapChart name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
+              )}
+
               {chart.type === 'multiple-line' && (
                 <MultipleLineChart
                   name={chart.name}
