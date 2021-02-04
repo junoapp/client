@@ -8,6 +8,7 @@ import {
   DatasetRecommendationMultipleLinesData,
   DatasetChartSpecValues,
   DashboardRecommendation,
+  DatasetGeoChartSpecValues,
 } from '@junoapp/common';
 import { getById } from '../services/dashboard.service';
 import { getSpec } from '../services/dashboard-recommendation.service';
@@ -24,6 +25,7 @@ import { MultipleLineChart } from '../charts/MultipleLineChart';
 import { applyClass } from '../utils/functions';
 import { Card } from '../components/ui/Card';
 import MapChart from '../charts/MapChart';
+import { MapBox } from '../charts/Mapbox';
 
 function convert(value: string) {
   return isNaN(+value) ? undefined : +value;
@@ -50,6 +52,10 @@ export function Dashboard(): JSX.Element {
         console.log(data);
 
         setPage(data.pages[0].name);
+
+        const clampStrings = dashboard.userDatasets[0].owner.preferences
+          ? dashboard.userDatasets[0].owner.preferences.clampStrings
+          : 30;
 
         for (const page of data.pages) {
           for (const datum of page.charts) {
@@ -90,7 +96,7 @@ export function Dashboard(): JSX.Element {
                   datum.key === (datum.encoding.x as FieldDefBase<Field>).field
                     ? 'stacked-vertical-bar'
                     : 'stacked-horizontal-bar',
-                name: `${datum.value} by ${datum.trimValues ? 'Top 30' : ''} ${
+                name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
                   datum.key
                 } and ${fieldColor}`,
                 values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
@@ -111,6 +117,18 @@ export function Dashboard(): JSX.Element {
                   },
                 ],
               });
+            } else if (datum.mark === 'geo-lat-lng') {
+              cData.push({
+                page: page.name,
+                type: datum.mark,
+                name: `${datum.value} ${datum.key} map`,
+                values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
+                  name: v[datum.key],
+                  value: convert(v[datum.value]),
+                  latitude: v['latitude'],
+                  longitude: v['longitude'],
+                })),
+              });
             } else {
               cData.push({
                 page: page.name,
@@ -120,13 +138,14 @@ export function Dashboard(): JSX.Element {
                       ? 'vertical-bar'
                       : 'horizontal-bar'
                     : datum.mark,
-                name: `${datum.value} by ${datum.trimValues ? 'Top 30' : ''} ${datum.key} ${
-                  datum.mark === 'heatmap' ? 'heatmap' : ''
-                }`,
+                name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
+                  datum.key
+                } ${datum.mark === 'heatmap' ? 'heatmap' : ''}`,
                 values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
                   name: v[datum.key],
                   value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
                 })),
+                geofile: datum.geoFile,
               });
             }
           }
@@ -183,7 +202,15 @@ export function Dashboard(): JSX.Element {
           .map((chart) => (
             <div key={chart.name}>
               {chart.type === 'geoshape' && (
-                <MapChart name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
+                <MapChart
+                  name={chart.name}
+                  geofile={chart.geofile}
+                  data={chart.values as DatasetChartSpecValues[]}
+                />
+              )}
+
+              {chart.type === 'geo-lat-lng' && (
+                <MapBox name={chart.name} data={chart.values as DatasetGeoChartSpecValues[]} />
               )}
 
               {chart.type === 'multiple-line' && (

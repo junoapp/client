@@ -12,15 +12,20 @@ function Header(): JSX.Element {
       <Link to="/">Juno</Link>
 
       {user && (
-        <button
-          type="button"
-          onClick={() => {
-            signOut();
-            history.replace('/');
-          }}
-        >
-          Sair
-        </button>
+        <div>
+          <button type="button" onClick={() => history.replace('/preferences')} className="mr-4">
+            Preferences
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              signOut();
+              history.replace('/');
+            }}
+          >
+            Sair
+          </button>
+        </div>
       )}
     </header>
   );

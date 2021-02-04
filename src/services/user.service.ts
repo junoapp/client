@@ -21,3 +21,9 @@ export async function save(user: UserDTO): Promise<UserInterface> {
 export async function remove(id: number): Promise<Response> {
   return ky.delete(`http://localhost:3001/api/user/${id}`);
 }
+
+export async function savePreferences(id: number, preferences: any): Promise<Response> {
+  return ky.post(`http://localhost:3001/api/user/preferences/${id}`, {
+    json: preferences,
+  });
+}

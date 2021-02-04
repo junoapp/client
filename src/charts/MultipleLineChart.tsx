@@ -57,7 +57,14 @@ export function MultipleLineChart(props: {
     const hasRightAxis = Object.values(props.axis).some((a) => a === 'right');
 
     const extent = d3.extent(props.data, xAcessor);
-    const keys = Object.keys(props.data[0].values).filter((k) => props.axis[k]);
+    const keys = [
+      ...new Set([
+        ...Object.keys(props.data[0].values),
+        ...Object.keys(props.data[1].values),
+        ...Object.keys(props.data[props.data.length - 2].values),
+        ...Object.keys(props.data[props.data.length - 1].values),
+      ]),
+    ].filter((k) => props.axis[k]);
 
     console.log(valueMaxLeft, valueMaxRight, keys);
 

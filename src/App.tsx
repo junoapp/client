@@ -9,6 +9,7 @@ import { UserAdd } from './pages/UserAdd';
 import { UserView } from './pages/UserView';
 import { UploadFileForm } from './components/UploadFileForm';
 import Header from './components/Header';
+import { Preferences } from './pages/Preferences';
 
 library.add(fas);
 
@@ -38,6 +39,9 @@ function App(): JSX.Element {
               </Route>
               <Route exact path="/user/view/:id">
                 <UserView />
+              </Route>
+              <Route exact path="/preferences">
+                <Preferences />
               </Route>
               <Route exact path="/">
                 <Home />

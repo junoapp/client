@@ -4,12 +4,13 @@ import { DatasetChartSpecValues, generateId } from '@junoapp/common';
 
 export function MapChart(props: {
   name: string;
+  geofile: string;
   data: Array<DatasetChartSpecValues>;
 }): JSX.Element {
   const [id] = useState<string>(generateId());
 
   useEffect(() => {
-    d3.json(`/be-provinces-unk.geo.json`).then((shape) => {
+    d3.json(`http://localhost:3001/${props.geofile}`).then((shape) => {
       const height = 600;
 
       const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);

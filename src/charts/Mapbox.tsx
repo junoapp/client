@@ -1,16 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import mapbox from 'mapbox-gl';
 import * as d3 from 'd3';
-import { DatasetChartSpecValues } from '@junoapp/common';
-
-import geocodingClient from '@mapbox/mapbox-sdk/services/geocoding';
+import { DatasetGeoChartSpecValues } from '@junoapp/common';
 
 mapbox.accessToken =
   'pk.eyJ1IjoicGF1bG9tZW5lemVzIiwiYSI6ImNrMHZrc3Z2NjEwODMzbG52emduZWFkeTIifQ.fUByXk2mj50HO1xPDiTr5w';
 
-const geocode = geocodingClient({ accessToken: mapbox.accessToken });
-
-export function MapBox(props: { name: string; data: Array<DatasetChartSpecValues> }): JSX.Element {
+export function MapBox(props: {
+  name: string;
+  data: Array<DatasetGeoChartSpecValues>;
+}): JSX.Element {
   const [initialized, setInitialized] = useState(false);
   const [lng, setLng] = useState(5);
   const [lat, setLat] = useState(34);
@@ -19,8 +18,10 @@ export function MapBox(props: { name: string; data: Array<DatasetChartSpecValues
   const mapContainer = useRef(null);
 
   useEffect(() => {
+    let map;
+
     if (!initialized) {
-      const map = new mapbox.Map({
+      map = new mapbox.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/light-v10', // 'mapbox://styles/mapbox/streets-v11',
         center: [lng, lat],
@@ -43,41 +44,8 @@ export function MapBox(props: { name: string; data: Array<DatasetChartSpecValues
 
       setInitialized(true);
 
-      const newData = [];
-      const promises = [];
-
-      for (const datum of props.data) {
-        promises.push(
-          geocode
-            .forwardGeocode({
-              query: datum.name,
-              mode: 'mapbox.places',
-              limit: 1,
-            })
-            .send()
-        );
-      }
-
-      Promise.all(promises).then((locations) => {
-        for (let index = 0; index < locations.length; index++) {
-          const location = locations[index];
-          const data = props.data[index];
-
-          console.log(location);
-
-          newData.push({
-            ...data,
-            location: location.body.features[0],
-          });
-        }
-
-        console.log(newData);
-
-        draw();
-      });
-
-      async function draw() {
-        const max = d3.max(newData, (d) => d.value);
+      function draw() {
+        const max = d3.max(props.data, (d) => d.value);
         const logScale = d3.scaleLog().domain([1, max]).range([1, 10]);
 
         const boundingBox = mapContainer.current.getBoundingClientRect();
@@ -89,34 +57,29 @@ export function MapBox(props: { name: string; data: Array<DatasetChartSpecValues
         const projection = d3
           .geoMercator()
           .center([center.lng, center.lat])
-          // .fitWidth(boundingBox.width, sphere)
-          // .fitHeight(boundingBox.height, sphere)
+          .fitWidth(boundingBox.width, sphere as any)
+          .fitHeight(boundingBox.height, sphere as any)
           .translate([boundingBox.width / 2, boundingBox.height / 2])
           .scale(scale);
 
-        const points = svg.selectAll('circle.station').data(newData.filter((d) => d.value > 0));
+        const points = svg.selectAll('circle.station').data(props.data.filter((d) => d.value > 0));
 
         points
           .enter()
           .append('circle')
           .attr('class', 'station')
-          .attr('cx', (d) => projection([d.location.center[0], d.location.center[1]])[0])
-          .attr('cy', (d) => projection([d.location.center[0], d.location.center[1]])[1])
-          .attr('r', 0)
+          .attr('cx', (d) => projection([d.longitude, d.latitude])[0])
+          .attr('cy', (d) => projection([d.longitude, d.latitude])[1])
+          .attr('r', (d) => logScale(+d.value))
           .attr('fill', '#919AD7')
-          .attr('opacity', 0.7)
-          .transition()
-          .duration(600)
-          .attr('r', (d) => logScale(+d.value));
+          .attr('opacity', 0.7);
 
         points
-          .attr('cx', (d) => projection([d.location.center[0], d.location.center[1]])[0])
-          .attr('cy', (d) => projection([d.location.center[0], d.location.center[1]])[1]);
-
-        // points.on('click', function (datum) {
-        //   map.flyTo({ center: [datum[lngField], datum[latField]], zoom: 3 });
-        // });
+          .attr('cx', (d) => projection([d.longitude, d.latitude])[0])
+          .attr('cy', (d) => projection([d.longitude, d.latitude])[1]);
       }
+
+      draw();
 
       map.on('move', () => {
         setLng(map.getCenter().lng);
@@ -126,10 +89,10 @@ export function MapBox(props: { name: string; data: Array<DatasetChartSpecValues
         draw();
       });
     }
-  }, [lat, lng, zoom, initialized]);
+  }, [lat, lng, zoom, initialized, props.data]);
 
   return (
-    <div style={{ position: 'relative', height: 400 }}>
+    <div className="relative mb-4 mt-4" style={{ height: 600 }}>
       <h1>{props.name}</h1>
       <div ref={(el) => (mapContainer.current = el)} className="mapContainer" />
     </div>
