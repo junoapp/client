@@ -46,23 +46,25 @@ export function Preferences(): JSX.Element {
     getById(+user).then((userData) => {
       console.log(userData);
 
-      formik.setFieldValue('stacked', userData['preferences'].stacked);
-      formik.setFieldValue('multiline', userData['preferences'].multiline);
-      formik.setFieldValue('rightAxis', userData['preferences'].rightAxis);
-      formik.setFieldValue('binValues', userData['preferences'].binValues);
-      formik.setFieldValue('clampStrings', userData['preferences'].clampStrings);
+      if (userData['preferences']) {
+        formik.setFieldValue('stacked', userData['preferences'].stacked);
+        formik.setFieldValue('multiline', userData['preferences'].multiline);
+        formik.setFieldValue('rightAxis', userData['preferences'].rightAxis);
+        formik.setFieldValue('binValues', userData['preferences'].binValues);
+        formik.setFieldValue('clampStrings', userData['preferences'].clampStrings);
 
-      for (const typeX of types) {
-        for (const typeY of types) {
-          if (typeX !== typeY) {
-            const index = userData['preferences'].chartTypes.findIndex(
-              (chartType) => chartType.typeX === typeX && chartType.typeY === typeY
-            );
+        for (const typeX of types) {
+          for (const typeY of types) {
+            if (typeX !== typeY) {
+              const index = userData['preferences'].chartTypes.findIndex(
+                (chartType) => chartType.typeX === typeX && chartType.typeY === typeY
+              );
 
-            formik.setFieldValue(
-              `chartTypes.${index}.chart`,
-              userData['preferences'].chartTypes[index].chart
-            );
+              formik.setFieldValue(
+                `chartTypes.${index}.chart`,
+                userData['preferences'].chartTypes[index].chart
+              );
+            }
           }
         }
       }

@@ -9,6 +9,7 @@ import {
   DatasetChartSpecValues,
   DashboardRecommendation,
   DatasetGeoChartSpecValues,
+  DatasetSchemaAggregateFunction,
 } from '@junoapp/common';
 import { getById } from '../services/dashboard.service';
 import { getSpec } from '../services/dashboard-recommendation.service';
@@ -26,6 +27,7 @@ import { applyClass } from '../utils/functions';
 import { Card } from '../components/ui/Card';
 import MapChart from '../charts/MapChart';
 import { MapBox } from '../charts/Mapbox';
+import { GroupedHorizontalBarChart } from '../charts/GroupedHorizontalBarChart';
 
 function convert(value: string) {
   return isNaN(+value) ? undefined : +value;
@@ -90,21 +92,39 @@ export function Dashboard(): JSX.Element {
             } else if (Object.keys(datum.encoding).length === 3) {
               const fieldColor = (datum.encoding.color as FieldDefBase<Field>).field.toString();
 
-              cData.push({
-                page: page.name,
-                type:
-                  datum.key === (datum.encoding.x as FieldDefBase<Field>).field
-                    ? 'stacked-vertical-bar'
-                    : 'stacked-horizontal-bar',
-                name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
-                  datum.key
-                } and ${fieldColor}`,
-                values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
-                  name: v[datum.key],
-                  name2: v[fieldColor],
-                  value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
-                })),
-              });
+              if (datum.userMeasure.aggregate === DatasetSchemaAggregateFunction.Mean) {
+                cData.push({
+                  page: page.name,
+                  type:
+                    datum.key === (datum.encoding.x as FieldDefBase<Field>).field
+                      ? 'grouped-vertical-bar'
+                      : 'grouped-horizontal-bar',
+                  name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
+                    datum.key
+                  } and ${fieldColor}`,
+                  values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
+                    name: v[datum.key],
+                    name2: v[fieldColor],
+                    value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
+                  })),
+                });
+              } else {
+                cData.push({
+                  page: page.name,
+                  type:
+                    datum.key === (datum.encoding.x as FieldDefBase<Field>).field
+                      ? 'stacked-vertical-bar'
+                      : 'stacked-horizontal-bar',
+                  name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
+                    datum.key
+                  } and ${fieldColor}`,
+                  values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
+                    name: v[datum.key],
+                    name2: v[fieldColor],
+                    value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
+                  })),
+                });
+              }
             } else if (datum.mark === 'text') {
               cData.push({
                 page: page.name,
@@ -188,7 +208,7 @@ export function Dashboard(): JSX.Element {
           chartData
             .filter((chart) => chart.type === 'text')
             .map((chart) => (
-              <Card title={chart.name} className="mx-4">
+              <Card title={chart.name} key={chart.name} className="mx-4">
                 <div key={chart.name} className="card">
                   <h3>{formatter((chart.values[0] as DatasetChartSpecValues).value)}</h3>
                 </div>
@@ -256,6 +276,14 @@ export function Dashboard(): JSX.Element {
 
               {chart.type === 'stacked-horizontal-bar' && (
                 <StackedHorizontalBarChart
+                  name={chart.name}
+                  data={chart.values as DatasetChartSpecValues[]}
+                  onPress={(data) => console.log(data)}
+                />
+              )}
+
+              {chart.type === 'grouped-horizontal-bar' && (
+                <GroupedHorizontalBarChart
                   name={chart.name}
                   data={chart.values as DatasetChartSpecValues[]}
                   onPress={(data) => console.log(data)}

@@ -1891,11 +1891,6 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@junoapp/common@file:.yalc/@junoapp/common":
-  version "0.1.0"
-  dependencies:
-    compassql "^0.21.2"
-
 "@mapbox/fusspot@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@mapbox/fusspot/-/fusspot-0.4.0.tgz#5ac625b5ed31695fda465fb0413ee0379bdf553c"
