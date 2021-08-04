@@ -1,8 +1,21 @@
 @tailwind base;
 @tailwind components;
 
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: local('OpenDyslexic'), url('./fonts/OpenDyslexic-Bold.otf') format('woff');
+}
+
 html {
   @apply bg-gray-100;
+}
+
+.dyslexic-font {
+  font-family: 'OpenDyslexic';
+}
+
+.dyslexic-font text {
+  font-family: 'OpenDyslexic';
 }
 
 .min-h {

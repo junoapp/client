@@ -33,7 +33,10 @@ function convert(value: string) {
   return isNaN(+value) ? undefined : +value;
 }
 
-const formatter = new Intl.NumberFormat('pt-BR').format;
+const formatter = new Intl.NumberFormat('pt-BR', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+}).format;
 
 export function Dashboard(): JSX.Element {
   const [dashboard, setDashboard] = useState<DashboardRecommendation | undefined>(undefined);
@@ -51,8 +54,6 @@ export function Dashboard(): JSX.Element {
 
         let cData: DatasetChartSpec[] = [];
 
-        console.log(data);
-
         setPage(data.pages[0].name);
 
         const clampStrings = dashboard.userDatasets[0].owner.preferences
@@ -64,20 +65,12 @@ export function Dashboard(): JSX.Element {
             if (datum.multipleLines) {
               const fieldX = [
                 ...new Set(
-                  datum.multipleLines.specs.map(
-                    (spec) => (spec.encoding.x as FieldDefBase<Field>).field
-                  )
+                  datum.multipleLines.specs.map((spec) => (spec as any).userDimension.name)
                 ),
               ];
               const fieldY = [
-                ...new Set(
-                  datum.multipleLines.specs.map(
-                    (spec) => (spec.encoding.y as FieldDefBase<Field>).field
-                  )
-                ),
+                ...new Set(datum.multipleLines.specs.map((spec) => (spec as any).userMeasure.name)),
               ];
-
-              console.log({ fieldX, fieldY });
 
               cData.push({
                 page: page.name,
@@ -99,9 +92,9 @@ export function Dashboard(): JSX.Element {
                     datum.key === (datum.encoding.x as FieldDefBase<Field>).field
                       ? 'grouped-vertical-bar'
                       : 'grouped-horizontal-bar',
-                  name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
-                    datum.key
-                  } and ${fieldColor}`,
+                  name: `${datum.userMeasure.name} by ${
+                    datum.trimValues ? `Top ${clampStrings}` : ''
+                  } ${datum.userDimension.name} and ${datum.userSecondDimension.name}`,
                   values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
                     name: v[datum.key],
                     name2: v[fieldColor],
@@ -115,9 +108,9 @@ export function Dashboard(): JSX.Element {
                     datum.key === (datum.encoding.x as FieldDefBase<Field>).field
                       ? 'stacked-vertical-bar'
                       : 'stacked-horizontal-bar',
-                  name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
-                    datum.key
-                  } and ${fieldColor}`,
+                  name: `${datum.userMeasure.name} by ${
+                    datum.trimValues ? `Top ${clampStrings}` : ''
+                  } ${datum.userDimension.name} and ${datum.userSecondDimension.name}`,
                   values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
                     name: v[datum.key],
                     name2: v[fieldColor],
@@ -141,7 +134,7 @@ export function Dashboard(): JSX.Element {
               cData.push({
                 page: page.name,
                 type: datum.mark,
-                name: `${datum.value} ${datum.key} map`,
+                name: `${datum.value} ${datum.userDimension.name} map`,
                 values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
                   name: v[datum.key],
                   value: convert(v[datum.value]),
@@ -158,9 +151,11 @@ export function Dashboard(): JSX.Element {
                       ? 'vertical-bar'
                       : 'horizontal-bar'
                     : datum.mark,
-                name: `${datum.value} by ${datum.trimValues ? `Top ${clampStrings}` : ''} ${
-                  datum.key
-                } ${datum.mark === 'heatmap' ? 'heatmap' : ''}`,
+                name: `${datum.userMeasure.name} of ${
+                  datum.trimValues ? `Top ${clampStrings}` : ''
+                } ${datum?.userDimension?.name ?? datum.key} ${
+                  datum.mark === 'heatmap' ? 'heatmap' : ''
+                }`,
                 values: ((datum.data as InlineData).values as Array<any>).map((v) => ({
                   name: v[datum.key],
                   value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
@@ -170,8 +165,6 @@ export function Dashboard(): JSX.Element {
             }
           }
         }
-
-        console.log(cData);
 
         setChartData(cData);
       });
@@ -219,8 +212,8 @@ export function Dashboard(): JSX.Element {
       {chartData &&
         chartData
           .filter((chart) => chart.page === page)
-          .map((chart) => (
-            <div key={chart.name}>
+          .map((chart, index) => (
+            <div key={`${chart.name}-${index}`}>
               {chart.type === 'geoshape' && (
                 <MapChart
                   name={chart.name}
@@ -238,31 +231,21 @@ export function Dashboard(): JSX.Element {
                   name={chart.name}
                   data={chart.values as DatasetRecommendationMultipleLinesData[]}
                   axis={chart.axis!}
-                  onPress={(data) => console.log(data)}
                 />
               )}
 
               {chart.type === 'line' && (
-                <LineChart
-                  name={chart.name}
-                  data={chart.values as DatasetChartSpecValues[]}
-                  onPress={(data) => console.log(data)}
-                />
+                <LineChart name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
               )}
 
               {chart.type === 'heatmap' && (
-                <Heatmap
-                  name={chart.name}
-                  data={chart.values as DatasetChartSpecValues[]}
-                  onPress={(data) => console.log(data)}
-                />
+                <Heatmap name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
               )}
 
               {chart.type === 'vertical-bar' && (
                 <VerticalBarChart
                   name={chart.name}
                   data={chart.values as DatasetChartSpecValues[]}
-                  onPress={(data) => console.log(data)}
                 />
               )}
 
@@ -270,7 +253,6 @@ export function Dashboard(): JSX.Element {
                 <HorizontalBarChart
                   name={chart.name}
                   data={chart.values as DatasetChartSpecValues[]}
-                  onPress={(data) => console.log(data)}
                 />
               )}
 
@@ -278,7 +260,6 @@ export function Dashboard(): JSX.Element {
                 <StackedHorizontalBarChart
                   name={chart.name}
                   data={chart.values as DatasetChartSpecValues[]}
-                  onPress={(data) => console.log(data)}
                 />
               )}
 
@@ -286,7 +267,6 @@ export function Dashboard(): JSX.Element {
                 <GroupedHorizontalBarChart
                   name={chart.name}
                   data={chart.values as DatasetChartSpecValues[]}
-                  onPress={(data) => console.log(data)}
                 />
               )}
             </div>

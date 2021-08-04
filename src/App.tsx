@@ -10,12 +10,16 @@ import { UserView } from './pages/UserView';
 import { UploadFileForm } from './components/UploadFileForm';
 import Header from './components/Header';
 import { Preferences } from './pages/Preferences';
+import { UserContext } from './contexts/user.context';
+import { useContext } from 'react';
 
 library.add(fas);
 
 function App(): JSX.Element {
+  const { disability } = useContext(UserContext);
+
   return (
-    <div className="App">
+    <div className={`App ${disability?.includes('dyslexic') ? 'dyslexic-font' : ''}`}>
       <BrowserRouter>
         <Switch>
           <div>

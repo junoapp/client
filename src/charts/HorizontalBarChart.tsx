@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import * as d3 from 'd3';
 import { DatasetChartSpecValues } from '@junoapp/common';
 
-import { generateId } from '../utils/functions';
+import { createColorScale, generateId } from '../utils/functions';
+import { UserContext } from '../contexts/user.context';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -11,15 +12,15 @@ function elementId(svgId: string, id: string): string {
 export function HorizontalBarChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
-  onPress: (data: DatasetChartSpecValues) => void;
 }): JSX.Element {
   const [id] = useState<string>(generateId());
+  const { disability } = useContext(UserContext);
 
   useEffect(() => {
     const margin = {
       top: 10,
       bottom: 30,
-      left: 100,
+      left: 0,
       right: 10,
     };
 
@@ -37,6 +38,28 @@ export function HorizontalBarChart(props: {
     const keys = props.data.map(xAcessor);
     const valueMax = d3.max(props.data, yAcessor);
 
+    var maxTextWidth = 0;
+
+    svg
+      .append('g')
+      .selectAll('.dummyText')
+      .data(keys)
+      .enter()
+      .append('text')
+      .attr('font-family', 'sans-serif')
+      .attr('font-size', '14px')
+      .text((d) => d)
+      .each(function () {
+        const thisWidth = this.getComputedTextLength() + 10;
+        if (thisWidth > maxTextWidth) {
+          maxTextWidth = thisWidth;
+        }
+
+        this.remove();
+      });
+
+    margin.left = maxTextWidth;
+
     const xScale = d3
       .scaleLinear()
       .domain([0, valueMax])
@@ -49,7 +72,7 @@ export function HorizontalBarChart(props: {
       .paddingOuter(0.1)
       .range([margin.top, height - margin.bottom]);
 
-    const colorScale = d3.scaleOrdinal(keys.length > 10 ? ['#3575B1'] : d3.schemeCategory10);
+    const colorScale = createColorScale(disability, keys);
 
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
@@ -72,12 +95,16 @@ export function HorizontalBarChart(props: {
       .call(xAxis)
       .attr('transform', `translate(0, ${height - margin.bottom})`);
 
-    groupAxis.append('g').call(yAxis).attr('transform', `translate(${margin.left}, 0)`);
+    groupAxis
+      .append('g')
+      .call(yAxis)
+      .attr('transform', `translate(${margin.left}, 0)`)
+      .attr('class', 'y-axis');
 
     return () => {
       svg.remove();
     };
-  }, [id, props]);
+  }, [id, props, disability]);
 
   return (
     <div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { formatRelative } from 'date-fns';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import { getAll, remove } from '../services/dataset.service';
-import { DatasetInterface, DatasetColumnRole, DashboardInterface } from '@junoapp/common';
+import { getAll } from '../services/dataset.service';
+import { DatasetInterface, DatasetColumnRole } from '@junoapp/common';
 import { Alert } from './ui/Alert';
 import { Loading } from './ui/Loading';
 import { Card } from './ui/Card';
@@ -13,8 +13,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export function DatasetsList(): JSX.Element {
   const [datasets, setDatasets] = useState<DatasetInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { id } = useParams<{ id: string }>();
 
   const load = () => {
     setIsLoading(true);
@@ -41,12 +39,6 @@ export function DatasetsList(): JSX.Element {
     }
 
     return null;
-  };
-
-  const onDeleteHandler = async (id: number) => {
-    setIsLoading(true);
-    await remove(id);
-    load();
   };
 
   return (
@@ -77,13 +69,6 @@ export function DatasetsList(): JSX.Element {
                 </span>
               </div>
               <div className="flex">
-                {/* <Link
-                  to={`/user/${id}/dashboards/${dataset.id}/view`}
-                  className="button button-primary button-small mr-2"
-                >
-                  <FontAwesomeIcon icon="eye" />
-                  View
-                </Link> */}
                 <Link
                   to={`/dashboard/add/${dataset.id}`}
                   className="button button-primary button-small mr-2"
@@ -91,14 +76,6 @@ export function DatasetsList(): JSX.Element {
                   <FontAwesomeIcon icon="pencil-alt" className="mr-1" />
                   Create new dashboard
                 </Link>
-                {/* <button
-                  type="button"
-                  className="button button-danger button-small"
-                  onClick={() => onDeleteHandler(dataset.id)}
-                >
-                  <FontAwesomeIcon icon="trash" />
-                  Delete
-                </button> */}
               </div>
             </Card>
           </div>

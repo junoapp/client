@@ -1,17 +1,26 @@
 import { useEffect, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { DashboardList } from '../components/DashboardList';
 
 import { DatasetsList } from '../components/DatasetsList';
 import { UserContext } from '../contexts/user.context';
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 export function UserView(): JSX.Element {
+  const query = useQuery();
   const { id } = useParams<{ id: string }>();
   const user = useContext(UserContext);
 
+  const disability = query.get('d');
+
   useEffect(() => {
-    user.signIn(id);
-  }, [user, id]);
+    if (!user.user) {
+      user.signIn(id, disability);
+    }
+  }, [user, id, disability]);
 
   return (
     <div>

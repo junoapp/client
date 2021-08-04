@@ -44,8 +44,6 @@ export function Preferences(): JSX.Element {
 
   useEffect(() => {
     getById(+user).then((userData) => {
-      console.log(userData);
-
       if (userData['preferences']) {
         formik.setFieldValue('stacked', userData['preferences'].stacked);
         formik.setFieldValue('multiline', userData['preferences'].multiline);
@@ -69,6 +67,7 @@ export function Preferences(): JSX.Element {
         }
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const backToHome = () => {

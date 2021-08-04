@@ -11,7 +11,6 @@ function elementId(svgId: string, id: string): string {
 export function LineChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
-  onPress: (data: DatasetChartSpecValues) => void;
 }): JSX.Element {
   const [id] = useState<string>(generateId());
 

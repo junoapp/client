@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import * as d3 from 'd3';
 import {
-  DatasetChartSpecValues,
   DatasetRecommendationMultipleLinesAxis,
   DatasetRecommendationMultipleLinesData,
 } from '@junoapp/common';
 
-import { generateId } from '../utils/functions';
+import { createColorScale, generateId } from '../utils/functions';
+import { UserContext } from '../contexts/user.context';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -16,9 +16,9 @@ export function MultipleLineChart(props: {
   name: string;
   data: Array<DatasetRecommendationMultipleLinesData>;
   axis: DatasetRecommendationMultipleLinesAxis;
-  onPress: (data: DatasetChartSpecValues) => void;
 }): JSX.Element {
   const [id] = useState<string>(generateId());
+  const { disability } = useContext(UserContext);
 
   useEffect(() => {
     const margin = {
@@ -66,9 +66,7 @@ export function MultipleLineChart(props: {
       ]),
     ].filter((k) => props.axis[k]);
 
-    console.log(valueMaxLeft, valueMaxRight, keys);
-
-    const colorScale = d3.scaleOrdinal(keys.length > 10 ? ['#3575B1'] : d3.schemeCategory10);
+    const colorScale = createColorScale(disability, keys);
 
     const xScale = d3
       .scaleTime()
@@ -132,7 +130,7 @@ export function MultipleLineChart(props: {
     return () => {
       svg.remove();
     };
-  }, [id, props]);
+  }, [id, props, disability]);
 
   return (
     <div>

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import * as d3 from 'd3';
 import { DatasetChartSpecValues } from '@junoapp/common';
 
-import { generateId } from '../utils/functions';
+import { createColorScale, generateId } from '../utils/functions';
+import { UserContext } from '../contexts/user.context';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -11,9 +12,9 @@ function elementId(svgId: string, id: string): string {
 export function GroupedHorizontalBarChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
-  onPress: (data: DatasetChartSpecValues) => void;
 }): JSX.Element {
   const [id] = useState<string>(generateId());
+  const { disability } = useContext(UserContext);
 
   useEffect(() => {
     const margin = {
@@ -70,11 +71,8 @@ export function GroupedHorizontalBarChart(props: {
       []
     );
 
-    console.log(data);
-
     const keys = data.map((d) => d.name).reverse();
     const groupedKeys = [...new Set(data.map((d) => d.values.map((v) => v.name)).flat())];
-    console.log({ keys, groupedKeys, valueMax });
 
     const colors = [...new Set(data.map((d) => d.values.map((v) => v.name)).flat())];
 
@@ -97,7 +95,7 @@ export function GroupedHorizontalBarChart(props: {
       .paddingOuter(0.1)
       .range([0, yScale.bandwidth()]);
 
-    const colorScale = d3.scaleOrdinal(colors.length > 10 ? ['#3575B1'] : d3.schemeCategory10);
+    const colorScale = createColorScale(disability, colors);
 
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
@@ -141,7 +139,7 @@ export function GroupedHorizontalBarChart(props: {
     return () => {
       svg.remove();
     };
-  }, [id, props]);
+  }, [id, props, disability]);
 
   return (
     <div>

@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
-import { Formik, Form, FieldArray } from 'formik';
+import { Formik, Form } from 'formik';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useParams, useHistory } from 'react-router-dom';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
 import { getById } from '../services/dataset.service';
 import * as dashboardService from '../services/dashboard.service';
@@ -15,6 +14,7 @@ import { DropdownOption } from '../models/dropdown-option';
 import { DashboardGoal, DashboardPurpose, DatasetColumnRole } from '@junoapp/common';
 import { UserContext } from '../contexts/user.context';
 import { DatasetSchemaAggregateFunction } from '@junoapp/common';
+import { capitalize } from '../utils/functions';
 
 export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Element {
   const [isLoading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
           formFields.push({
             id: field.id,
             originalName: field.name,
-            name: field.name,
+            name: capitalize(field.name),
             role: field.role,
             index,
             removed: false,
@@ -60,10 +60,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
           });
         });
 
-        setName(response.originalname);
+        setName(capitalize(response.originalname));
         setLoading(false);
         setValues({
-          name: response.originalname,
+          name: capitalize(response.originalname),
           type: '',
           purpose: '',
           fields: formFields,
@@ -109,12 +109,6 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
     history.replace(`/user/view/${user}`);
   };
 
-  const onDragEnd = (result: DropResult, swap: (indexA: number, indexB: number) => void) => {
-    if (result.destination) {
-      swap(result.source.index, result.destination.index);
-    }
-  };
-
   return (
     <div className="relative">
       <Card className="min-h" title={name}>
@@ -131,7 +125,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                   index: i,
                   role: f.role as DatasetColumnRole,
                 }));
-                console.log(values, fields);
+
                 setLoading(true);
                 if (action === 'add') {
                   await dashboardService.save({
@@ -191,100 +185,78 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
 
                   <hr className="mt-2 mb-4" />
 
-                  <FieldArray name="fields">
-                    {({ remove, move }) => (
-                      <DragDropContext onDragEnd={(result) => onDragEnd(result, move)}>
-                        <Droppable droppableId="droppable">
-                          {(provided, snapshot) => (
-                            <div {...provided.droppableProps} ref={provided.innerRef}>
-                              {values.fields.length > 0 &&
-                                values.fields.map((item, index) => (
-                                  <Draggable key={item.name} draggableId={item.name} index={index}>
-                                    {(provided, snapshot) => (
-                                      <div
-                                        className="flex -mx-4 bg-white"
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                      >
-                                        <div className="px-4 flex items-center">
-                                          <FontAwesomeIcon icon="bars" />
-                                        </div>
-                                        <div className="px-4 w-2/5">
-                                          <Input
-                                            name={`fields.${index}.name`}
-                                            label={`Name (${values.fields[index].originalName})`}
-                                            formik={{ getFieldProps }}
-                                          />
-                                        </div>
-                                        <div className="px-4 w-2/5">
-                                          <Input
-                                            name={`fields.${index}.type`}
-                                            label={`Type`}
-                                            formik={{ getFieldProps }}
-                                            disabled
-                                          />
-                                        </div>
-                                        <div className="px-4 w-2/5">
-                                          <Select
-                                            name={`fields.${index}.role`}
-                                            label="Type"
-                                            options={[
-                                              { value: 'measure', label: 'Measure' },
-                                              { value: 'dimension', label: 'Dimension' },
-                                            ]}
-                                            formik={{ getFieldProps }}
-                                          />
-                                        </div>
-                                        <div className="px-4 w-2/5">
-                                          <Select
-                                            name={`fields.${index}.aggregate`}
-                                            label="Aggregate"
-                                            options={[
-                                              { value: 'NONE', label: 'None' },
-                                              { value: 'MIN', label: 'Min' },
-                                              { value: 'MEAN', label: 'Mean' },
-                                              { value: 'SUM', label: 'Sum' },
-                                              { value: 'BIN', label: 'Bin' },
-                                              { value: 'MAX', label: 'Max' },
-                                              { value: 'MEDIAN', label: 'Median' },
-                                            ]}
-                                            formik={{ getFieldProps }}
-                                            disabled={
-                                              values.fields[index].role === 'dimension' ||
-                                              values.fields[index].originalName === 'count'
-                                            }
-                                          />
-                                        </div>
-                                        <div className="px-4 flex items-center">
-                                          <button
-                                            type="button"
-                                            className={`button ${
-                                              item.removed ? 'button-success' : 'button-danger'
-                                            }`}
-                                            onClick={() =>
-                                              setFieldValue(
-                                                `fields.${index}.removed`,
-                                                !values.fields[index].removed
-                                              )
-                                            }
-                                          >
-                                            <FontAwesomeIcon
-                                              icon={item.removed ? 'plus' : 'times'}
-                                            />
-                                          </button>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      </DragDropContext>
-                    )}
-                  </FieldArray>
+                  <div>
+                    {values.fields.length > 0 &&
+                      values.fields.map((item, index) => (
+                        <div className="flex -mx-4 bg-white">
+                          {/* <div className="px-4 flex items-center">
+                            <FontAwesomeIcon icon="bars" />
+                          </div> */}
+                          <div className="px-4 w-2/5">
+                            <Input
+                              name={`fields.${index}.name`}
+                              label={`Name`}
+                              formik={{ getFieldProps }}
+                            />
+                          </div>
+                          <div className="px-4 w-2/5">
+                            <Input
+                              name={`fields.${index}.type`}
+                              label={`Type`}
+                              formik={{ getFieldProps }}
+                              disabled
+                            />
+                          </div>
+                          <div className="px-4 w-2/5">
+                            <Select
+                              name={`fields.${index}.role`}
+                              label="Type"
+                              options={[
+                                { value: 'measure', label: 'Measure' },
+                                { value: 'dimension', label: 'Dimension' },
+                              ]}
+                              formik={{ getFieldProps }}
+                            />
+                          </div>
+                          <div className="px-4 w-2/5">
+                            <Select
+                              name={`fields.${index}.aggregate`}
+                              label="Aggregate"
+                              options={[
+                                { value: 'NONE', label: 'None' },
+                                { value: 'MIN', label: 'Min' },
+                                { value: 'MEAN', label: 'Mean' },
+                                { value: 'SUM', label: 'Sum' },
+                                { value: 'BIN', label: 'Bin' },
+                                { value: 'MAX', label: 'Max' },
+                                { value: 'MEDIAN', label: 'Median' },
+                              ]}
+                              formik={{ getFieldProps }}
+                              disabled={
+                                values.fields[index].role === 'dimension' ||
+                                values.fields[index].originalName === 'count'
+                              }
+                            />
+                          </div>
+                          <div className="px-4 flex items-center">
+                            <button
+                              type="button"
+                              className={`button ${
+                                item.removed ? 'button-success' : 'button-danger'
+                              }`}
+                              onClick={() =>
+                                setFieldValue(
+                                  `fields.${index}.removed`,
+                                  !values.fields[index].removed
+                                )
+                              }
+                            >
+                              <FontAwesomeIcon icon={item.removed ? 'plus' : 'times'} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                   <div className="flex justify-end">
                     <button type="button" className="button mr-2" onClick={backToHome}>
                       Cancel

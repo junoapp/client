@@ -1,7 +1,11 @@
 module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
-    extend: {},
+    // extend: {
+    //   fontFamily: {
+    //     sans: 'OpenDyslexic',
+    //   },
+    // },
     inset: {
       0: 0,
       '1/2': '50%',

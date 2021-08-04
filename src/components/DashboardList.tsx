@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { formatRelative } from 'date-fns';
 import { Link, useParams } from 'react-router-dom';
 
-import { getAll, remove } from '../services/dashboard.service';
-import { DatasetInterface, DatasetColumnRole, DashboardInterface } from '@junoapp/common';
+import { getAll } from '../services/dashboard.service';
+import { DatasetColumnRole, DashboardInterface } from '@junoapp/common';
 import { Alert } from './ui/Alert';
 import { Loading } from './ui/Loading';
 import { Card } from './ui/Card';
@@ -16,18 +16,18 @@ export function DashboardList(): JSX.Element {
 
   const { id } = useParams<{ id: string }>();
 
-  const load = () => {
-    setIsLoading(true);
-
-    getAll(+id).then((datasets) => {
-      setDatasets(datasets);
-      setIsLoading(false);
-    });
-  };
-
   useEffect(() => {
+    const load = () => {
+      setIsLoading(true);
+
+      getAll(+id).then((datasets) => {
+        setDatasets(datasets);
+        setIsLoading(false);
+      });
+    };
+
     load();
-  }, []);
+  }, [id]);
 
   const countColumns = (dataset: DashboardInterface, type: DatasetColumnRole): React.ReactNode => {
     const count = dataset.userDatasets[0].columns.filter(
@@ -43,12 +43,6 @@ export function DashboardList(): JSX.Element {
     }
 
     return null;
-  };
-
-  const onDeleteHandler = async (id: number) => {
-    setIsLoading(true);
-    await remove(id);
-    load();
   };
 
   return (
@@ -93,14 +87,6 @@ export function DashboardList(): JSX.Element {
                   <FontAwesomeIcon icon="pencil-alt" />
                   Edit
                 </Link>
-                {/* <button
-                  type="button"
-                  className="button button-danger button-small"
-                  onClick={() => onDeleteHandler(dataset.id)}
-                >
-                  <FontAwesomeIcon icon="trash" />
-                  Delete
-                </button> */}
               </div>
             </Card>
           </div>

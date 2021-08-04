@@ -52,7 +52,7 @@ export function MapChart(props: {
         svg.remove();
       };
     });
-  }, [id, props.data]);
+  }, [id, props.data, props.geofile]);
 
   return (
     <div>

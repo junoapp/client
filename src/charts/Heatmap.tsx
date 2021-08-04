@@ -9,11 +9,7 @@ function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
 }
 
-export function Heatmap(props: {
-  name: string;
-  data: Array<DatasetChartSpecValues>;
-  onPress: (data: DatasetChartSpecValues) => void;
-}): JSX.Element {
+export function Heatmap(props: { name: string; data: Array<DatasetChartSpecValues> }): JSX.Element {
   const [id] = useState<string>(generateId());
 
   useEffect(() => {
@@ -45,8 +41,6 @@ export function Heatmap(props: {
 
     const weeks = [...new Set(props.data.map((d) => formatWeeek(d)))];
 
-    console.log({ weeks });
-
     const xScale = d3
       .scaleBand()
       .domain(weeks)
@@ -72,34 +66,6 @@ export function Heatmap(props: {
 
     const extent = d3.extent(props.data, (d) => parse(d.name, 'yyyy/MM/dd', new Date()));
     const delta = differenceInDays(extent[1], extent[0]);
-
-    // 363 - 3
-    // 2660 - 18
-    /*
-
-    x1 = 363
-    y1 = 3
-
-    x2 = 2660
-    y2 = 18
-    
-    (y1 - y2) x + (x2 - x1) y + x1y2 - x2y1 = 0
-
-    (3 - 18) x + (2660 - 363) y + 363*18 - 266*03 = 0
-    (-15) x + (2297) y + 6534 - 798 = 0
-    -15x + 2297y + 5736 = 0
-    -15x + 2297y = -5736
-
-    //
-
-    (y2 - y1) = m(x2 - x1)
-    (18 - 3) = m(2660 - 363)
-    15 = m * 2297
-    m * 2297 = 15
-    m = 15 / 2297
-    m = 0.006530
-
-    */
 
     const xAxis = d3
       .axisBottom(xScale)

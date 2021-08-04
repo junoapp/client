@@ -12,9 +12,7 @@ export function DatabaseConnectionForm() {
       password: '',
       database: '',
     },
-    onSubmit: (values) => {
-      console.log(values);
-    },
+    onSubmit: (values) => {},
   });
 
   return (
