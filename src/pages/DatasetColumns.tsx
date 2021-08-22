@@ -26,6 +26,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
   }>({ name: '', type: '', purpose: '', fields: [] });
 
   const [name, setName] = useState<string | undefined>(undefined);
+  const [loadingCount, setLoadingCount] = useState(0);
 
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -35,6 +36,13 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
     setLoading(true);
     if (action === 'add') {
       getById(+id).then((response) => {
+        if (response.columns.length === 0) {
+          setTimeout(() => {
+            setLoadingCount(loadingCount + 1);
+          }, 1000);
+          return;
+        }
+
         const formFields: UploadInfoField[] = [];
         const indexes: DropdownOption[] = [];
 
@@ -103,7 +111,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
         });
       });
     }
-  }, [id, action]);
+  }, [id, action, loadingCount]);
 
   const backToHome = () => {
     history.replace(`/user/view/${user}`);

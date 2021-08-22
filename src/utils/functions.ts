@@ -35,7 +35,8 @@ export function capitalize(value: string) {
     .map((s) => s.split(/(?=[A-Z])/))
     .flat()
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(' ');
+    .join(' ')
+    .replace(/\s+/g, ' ');
 }
 
 export function createColorScale(

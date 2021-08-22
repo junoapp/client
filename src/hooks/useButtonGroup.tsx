@@ -4,8 +4,8 @@ import { applyClass } from '../utils/functions';
 export function useButtonGroup(
   options: Array<{ type: string; label: string }>,
   defaultValue: string | undefined
-): [string | undefined, () => JSX.Element] {
-  const [dataset, setDataset] = useState<string | undefined>(defaultValue);
+): [string | undefined, () => JSX.Element, React.Dispatch<React.SetStateAction<string>>] {
+  const [state, setState] = useState<string | undefined>(defaultValue);
 
   const ButtonGroup = () => (
     <div className="flex items-start">
@@ -14,11 +14,11 @@ export function useButtonGroup(
           <button
             key={option.type}
             type="button"
-            className={`button button-primary mr-2 ${applyClass(
-              dataset === option.type,
+            className={`button button-primary rounded-none first:rounded-l-md last:rounded-r-md ${applyClass(
+              state === option.type,
               'active'
             )}`}
-            onClick={() => setDataset(option.type)}
+            onClick={() => setState(option.type)}
           >
             {option.label}
           </button>
@@ -26,5 +26,5 @@ export function useButtonGroup(
     </div>
   );
 
-  return [dataset, ButtonGroup];
+  return [state, ButtonGroup, setState];
 }

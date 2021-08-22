@@ -11,7 +11,11 @@ module.exports = {
       '1/2': '50%',
     },
   },
-  variants: {},
+  variants: {
+    extend: {
+      borderRadius: ['first', 'last'],
+    },
+  },
   plugins: [],
   'tailwindCSS.includeLanguages': {
     typescript: 'javascript',

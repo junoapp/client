@@ -1,26 +1,21 @@
 import { useEffect, useContext } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { DashboardList } from '../components/DashboardList';
 
 import { DatasetsList } from '../components/DatasetsList';
 import { UserContext } from '../contexts/user.context';
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { getById } from '../services/user.service';
 
 export function UserView(): JSX.Element {
-  const query = useQuery();
   const { id } = useParams<{ id: string }>();
   const user = useContext(UserContext);
 
-  const disability = query.get('d');
-
   useEffect(() => {
-    if (!user.user) {
-      user.signIn(id, disability);
-    }
-  }, [user, id, disability]);
+    getById(+id).then((userData) => {
+      user.signIn(id, userData.disability);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   return (
     <div>

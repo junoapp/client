@@ -1,14 +1,38 @@
-import { UserDisability, UserVisLiteracy } from '@junoapp/common';
+import { UserVisLiteracy } from '@junoapp/common';
 import { useFormik } from 'formik';
 import { useHistory } from 'react-router-dom';
 
 import { Input } from '../components/form/Input';
-import { Select } from '../components/form/Select';
 import { Card } from '../components/ui/Card';
+import { useButtonGroup } from '../hooks/useButtonGroup';
 import { save } from '../services/user.service';
 
 export function UserAdd(): JSX.Element {
   const history = useHistory();
+  const [visLiteracy, VisLiteracy] = useButtonGroup(
+    [
+      { type: 'LOW', label: 'Low' },
+      { type: 'MEDIUM', label: 'Medium' },
+      { type: 'HIGH', label: 'High' },
+    ],
+    'LOW'
+  );
+
+  const [colorBlind, ColorBlind] = useButtonGroup(
+    [
+      { type: 'false', label: 'No' },
+      { type: 'true', label: 'Yes' },
+    ],
+    'false'
+  );
+
+  const [dyslexic, Dyslexic] = useButtonGroup(
+    [
+      { type: 'false', label: 'No' },
+      { type: 'true', label: 'Yes' },
+    ],
+    'false'
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -19,8 +43,13 @@ export function UserAdd(): JSX.Element {
     onSubmit: (values) => {
       save({
         name: values.name,
-        disability: (values.disability || null) as UserDisability,
-        visLiteracy: values.visLiteracy as UserVisLiteracy,
+        disability: [
+          colorBlind === 'true' ? 'colorBlind' : false,
+          dyslexic === 'true' ? 'dyslexic' : false,
+        ]
+          .filter(Boolean)
+          .join(', '),
+        visLiteracy: visLiteracy as UserVisLiteracy,
       }).then((user) => {
         history.replace('/');
       });
@@ -38,26 +67,23 @@ export function UserAdd(): JSX.Element {
           </div>
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full px-3">
-              <Select
-                name="disability"
-                label="Disability"
-                options={[{ value: 'colorBlind', label: 'Color blind' }]}
-                formik={formik}
-              />
+              <label className="label">Disability - Color blind</label>
+
+              <ColorBlind />
             </div>
           </div>
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full px-3">
-              <Select
-                name="visLiteracy"
-                label="Vis Literacy"
-                options={[
-                  { value: 'LOW', label: 'Low' },
-                  { value: 'MEDIUM', label: 'Medium' },
-                  { value: 'HIGH', label: 'High' },
-                ]}
-                formik={formik}
-              />
+              <label className="label">Disability - Dyslexic</label>
+
+              <Dyslexic />
+            </div>
+          </div>
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label className="label">Vis Literacy</label>
+
+              <VisLiteracy />
             </div>
           </div>
 

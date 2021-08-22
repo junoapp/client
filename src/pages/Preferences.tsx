@@ -1,3 +1,4 @@
+import { UserVisLiteracy } from '@junoapp/common';
 import { useFormik } from 'formik';
 import { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { Input } from '../components/form/Input';
 import { Select } from '../components/form/Select';
 import { Card } from '../components/ui/Card';
 import { UserContext } from '../contexts/user.context';
+import { useButtonGroup } from '../hooks/useButtonGroup';
 import { getById, savePreferences } from '../services/user.service';
 
 const types = ['NUMBER', 'STRING', 'DATE'];
@@ -26,17 +28,52 @@ for (const typeX of types) {
 export function Preferences(): JSX.Element {
   const { user } = useContext(UserContext);
   const history = useHistory();
+
+  const [visLiteracy, VisLiteracy, setVisLiteracy] = useButtonGroup(
+    [
+      { type: 'LOW', label: 'Low' },
+      { type: 'MEDIUM', label: 'Medium' },
+      { type: 'HIGH', label: 'High' },
+    ],
+    'LOW'
+  );
+
+  const [colorBlind, ColorBlind, setColorBlind] = useButtonGroup(
+    [
+      { type: 'false', label: 'No' },
+      { type: 'true', label: 'Yes' },
+    ],
+    'false'
+  );
+
+  const [dyslexic, Dyslexic, setDyslexic] = useButtonGroup(
+    [
+      { type: 'false', label: 'No' },
+      { type: 'true', label: 'Yes' },
+    ],
+    'false'
+  );
+
   const formik = useFormik({
     initialValues: {
-      stacked: false,
-      multiline: false,
-      rightAxis: false,
+      stacked: true,
+      multiline: true,
+      rightAxis: true,
       binValues: 50,
       clampStrings: 30,
       chartTypes,
     },
     onSubmit: (values) => {
-      savePreferences(+user, values).then(() => {
+      savePreferences(+user, {
+        ...values,
+        disability: [
+          colorBlind === 'true' ? 'colorBlind' : false,
+          dyslexic === 'true' ? 'dyslexic' : false,
+        ]
+          .filter(Boolean)
+          .join(', '),
+        visLiteracy: visLiteracy as UserVisLiteracy,
+      }).then(() => {
         backToHome();
       });
     },
@@ -44,6 +81,10 @@ export function Preferences(): JSX.Element {
 
   useEffect(() => {
     getById(+user).then((userData) => {
+      setVisLiteracy(userData.visLiteracy);
+      setColorBlind(userData.disability.includes('colorBlind') ? 'true' : 'false');
+      setDyslexic(userData.disability.includes('dyslexic') ? 'true' : 'false');
+
       if (userData['preferences']) {
         formik.setFieldValue('stacked', userData['preferences'].stacked);
         formik.setFieldValue('multiline', userData['preferences'].multiline);
@@ -77,6 +118,28 @@ export function Preferences(): JSX.Element {
   return (
     <Card title="Preferences">
       <form className="w-full" onSubmit={formik.handleSubmit}>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label className="label">Disability - Color blind</label>
+
+            <ColorBlind />
+          </div>
+        </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label className="label">Disability - Dyslexic</label>
+
+            <Dyslexic />
+          </div>
+        </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label className="label">Vis Literacy</label>
+
+            <VisLiteracy />
+          </div>
+        </div>
+
         <div className="font-bold">Based on chart types:</div>
         <hr className="my-2" />
         <Checkbox

@@ -62,7 +62,7 @@ export function UsersList(): JSX.Element {
               </div>
               <div className="flex">
                 <Link
-                  to={`user/view/${user.id}?d=${user.disability}`}
+                  to={`user/view/${user.id}`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="eye" />
