@@ -41,7 +41,8 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "yalc:update": "yalc update"
+    "yalc:update": "yalc update",
+    "deploy": "yarn build && cp -R build/* ../server/public"
   },
   "eslintConfig": {
     "extends": "react-app"

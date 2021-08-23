@@ -1,17 +1,18 @@
 import ky from 'ky';
 
 import { DashboardUpdate, DatasetInterface } from '@junoapp/common';
+import { API_URL } from '../utils/constants';
 
 export async function getAll(): Promise<DatasetInterface[]> {
-  return ky.get(`http://localhost:3001/api/dataset`).json();
+  return ky.get(`${API_URL}/api/dataset`).json();
 }
 
 export async function getById(id: number): Promise<DatasetInterface> {
-  return ky.get(`http://localhost:3001/api/dataset/${id}`).json();
+  return ky.get(`${API_URL}/api/dataset/${id}`).json();
 }
 
 export async function getSpec(datasetId: number): Promise<any[]> {
-  return ky.get(`http://localhost:3001/api/dashboard/${datasetId}/spec`).json();
+  return ky.get(`${API_URL}/api/dashboard/${datasetId}/spec`).json();
 }
 
 export async function uploadDataset(userId: string, file: File): Promise<DatasetInterface> {
@@ -20,18 +21,18 @@ export async function uploadDataset(userId: string, file: File): Promise<Dataset
   formData.append('user', userId);
 
   return ky
-    .post('http://localhost:3001/api/dataset/upload', {
+    .post(`${API_URL}/api/dataset/upload`, {
       body: formData,
     })
     .json();
 }
 
 export async function updateColumns(id: number, fields: DashboardUpdate): Promise<Response> {
-  return ky.post(`http://localhost:3001/api/dashboard/${id}`, {
+  return ky.post(`${API_URL}/api/dashboard/${id}`, {
     json: fields,
   });
 }
 
 export async function remove(id: number): Promise<Response> {
-  return ky.delete(`http://localhost:3001/api/dataset/${id}`);
+  return ky.delete(`${API_URL}/api/dataset/${id}`);
 }

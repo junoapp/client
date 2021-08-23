@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import { DatasetChartSpecValues, generateId } from '@junoapp/common';
+import { API_URL } from '../utils/constants';
 
 export function MapChart(props: {
   name: string;
@@ -10,7 +11,7 @@ export function MapChart(props: {
   const [id] = useState<string>(generateId());
 
   useEffect(() => {
-    d3.json(`http://localhost:3001/${props.geofile}`).then((shape) => {
+    d3.json(`${API_URL}/${props.geofile}`).then((shape) => {
       const height = 600;
 
       const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);

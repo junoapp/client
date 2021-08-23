@@ -46,6 +46,9 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
         const formFields: UploadInfoField[] = [];
         const indexes: DropdownOption[] = [];
 
+        const moreThanOneMeasure =
+          response.columns.filter((column) => column.role === DatasetColumnRole.MEASURE).length > 1;
+
         response.columns.forEach((field, index) => {
           formFields.push({
             id: field.id,
@@ -53,7 +56,10 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
             name: capitalize(field.name),
             role: field.role,
             index,
-            removed: false,
+            removed:
+              moreThanOneMeasure &&
+              field.role === DatasetColumnRole.MEASURE &&
+              field.name.toLowerCase() === 'count',
             type: field.type,
             aggregate:
               field.role === DatasetColumnRole.MEASURE
