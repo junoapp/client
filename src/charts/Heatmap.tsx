@@ -86,7 +86,6 @@ export function Heatmap(props: { name: string; data: Array<DatasetChartSpecValue
 
   return (
     <div>
-      <h1>{props.name}</h1>
       <div id={id}></div>
     </div>
   );

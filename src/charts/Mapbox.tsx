@@ -91,7 +91,6 @@ export function MapBox(props: {
 
   return (
     <div className="relative mb-4 mt-4" style={{ height: 600 }}>
-      <h1>{props.name}</h1>
       <div ref={mapContainer} className="map-container mapContainer" />
     </div>
   );

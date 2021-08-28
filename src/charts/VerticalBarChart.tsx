@@ -2,8 +2,10 @@ import { useState, useEffect, useContext } from 'react';
 import * as d3 from 'd3';
 import { DatasetChartSpecValues } from '@junoapp/common';
 
-import { createColorScale, generateId, scaleBandInvert } from '../utils/functions';
+import { createColorScale, generateId } from '../utils/functions';
 import { UserContext } from '../contexts/user.context';
+import { createLegend } from '../utils/legends';
+import { createTooltipVertical } from '../utils/tooltip-vertical';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -12,13 +14,14 @@ function elementId(svgId: string, id: string): string {
 export function VerticalBarChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
+  keys: string[];
 }): JSX.Element {
   const [id] = useState<string>(generateId());
   const { disability } = useContext(UserContext);
 
   useEffect(() => {
     const margin = {
-      top: 10,
+      top: 40,
       bottom: 30,
       left: 40,
       right: 10,
@@ -29,7 +32,6 @@ export function VerticalBarChart(props: {
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
     const width = svg.node()?.getBoundingClientRect().width;
 
-    const groupHover = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupData = svg.append('g').attr('id', elementId(id, 'group-data'));
     const groupAxis = svg.append('g').attr('id', elementId(id, 'group-axis'));
 
@@ -56,32 +58,6 @@ export function VerticalBarChart(props: {
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    svg
-      .on('mousemove', function (event: any) {
-        const [x] = (d3 as any).pointer(event);
-
-        const name = scaleBandInvert(xScale)(x);
-
-        const d = props.data.find((d) => d.name === name);
-
-        groupHover.selectAll('.hover-rect').remove();
-        if (d) {
-          const scaleMargin = xScale.step() * xScale.paddingInner();
-
-          groupHover
-            .append('rect')
-            .attr('class', 'hover-rect')
-            .attr('x', (xScale(d.name) as number) - scaleMargin / 2)
-            .attr('y', yScale(valueMax))
-            .attr('width', xScale.bandwidth() + scaleMargin)
-            .attr('height', yScale(0) - margin.top)
-            .attr('fill', '#ccc');
-        }
-      })
-      .on('mouseleave', () => {
-        groupHover.selectAll('.hover-rect').remove();
-      });
-
     groupData
       .selectAll('rect.data-item')
       .data(props.data)
@@ -102,6 +78,15 @@ export function VerticalBarChart(props: {
 
     groupAxis.append('g').call(yAxis).attr('transform', `translate(${margin.left}, 0)`);
 
+    createLegend(
+      svg,
+      id,
+      margin.left,
+      colorScale.domain().length > colorScale.range().length ? props.keys : colorScale.domain(),
+      colorScale
+    );
+    createTooltipVertical(svg, id, yScale, props.data, props.keys, valueMax, margin.top, xScale);
+
     return () => {
       svg.remove();
     };
@@ -109,7 +94,6 @@ export function VerticalBarChart(props: {
 
   return (
     <div>
-      <h1>{props.name}</h1>
       <div id={id}></div>
     </div>
   );

@@ -21,11 +21,10 @@ function App(): JSX.Element {
   return (
     <div className={`App ${disability?.includes('dyslexic') ? 'dyslexic-font' : ''}`}>
       <BrowserRouter>
-        <Switch>
-          <div>
-            <Header />
-
-            <div className="container mx-auto pt-4 mb-8">
+        <Header />
+        <div>
+          <div className="container mx-auto pt-4 mb-8">
+            <Switch>
               <Route exact path="/user/add">
                 <UserAdd />
               </Route>
@@ -50,18 +49,10 @@ function App(): JSX.Element {
               <Route exact path="/">
                 <Home />
               </Route>
-            </div>
+            </Switch>
           </div>
-        </Switch>
+        </div>
       </BrowserRouter>
-
-      {/* <div className="border h-12 border-red-600">Toolbar</div>
-
-      <div className="flex flex-1">
-        <div className="border w-1/6 h-10"></div>
-        <div className="border flex-1 h-10"></div>
-        <div className="border w-1/6 h-10"></div>
-      </div> */}
     </div>
   );
 }

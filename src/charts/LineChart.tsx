@@ -3,6 +3,8 @@ import * as d3 from 'd3';
 import { DatasetChartSpecValues } from '@junoapp/common';
 
 import { generateId } from '../utils/functions';
+import { createLegend } from '../utils/legends';
+import { createTooltipVertical } from '../utils/tooltip-vertical';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -11,12 +13,13 @@ function elementId(svgId: string, id: string): string {
 export function LineChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
+  keys: string[];
 }): JSX.Element {
   const [id] = useState<string>(generateId());
 
   useEffect(() => {
     const margin = {
-      top: 10,
+      top: 40,
       bottom: 30,
       left: 80,
       right: 80,
@@ -75,6 +78,19 @@ export function LineChart(props: {
 
     groupAxis.append('g').call(yAxis).attr('transform', `translate(${margin.left}, 0)`);
 
+    createLegend(svg, id, margin.left, props.keys, () => 'steelblue');
+    createTooltipVertical(
+      svg,
+      id,
+      yScale,
+      props.data,
+      props.keys,
+      valueMax,
+      margin.top,
+      null,
+      xScale
+    );
+
     return () => {
       svg.remove();
     };
@@ -82,7 +98,6 @@ export function LineChart(props: {
 
   return (
     <div>
-      <h1>{props.name}</h1>
       <div id={id}></div>
     </div>
   );

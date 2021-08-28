@@ -4,6 +4,8 @@ import { DatasetChartSpecValues } from '@junoapp/common';
 
 import { createColorScale, generateId } from '../utils/functions';
 import { UserContext } from '../contexts/user.context';
+import { createLegend } from '../utils/legends';
+import { createTooltipHorizontal } from '../utils/tooltip-horizontal';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -12,19 +14,20 @@ function elementId(svgId: string, id: string): string {
 export function HorizontalBarChart(props: {
   name: string;
   data: Array<DatasetChartSpecValues>;
+  keys: string[];
 }): JSX.Element {
   const [id] = useState<string>(generateId());
   const { disability } = useContext(UserContext);
 
   useEffect(() => {
     const margin = {
-      top: 10,
+      top: 40,
       bottom: 30,
       left: 0,
       right: 10,
     };
 
-    const height = 400;
+    const height = 450;
 
     const svg = d3.select(`#${id}`).append('svg').attr('width', '100%').attr('height', height);
     const width = svg.node()?.getBoundingClientRect().width;
@@ -101,6 +104,16 @@ export function HorizontalBarChart(props: {
       .attr('transform', `translate(${margin.left}, 0)`)
       .attr('class', 'y-axis');
 
+    createLegend(
+      svg,
+      id,
+      margin.left,
+      colorScale.domain().length > colorScale.range().length ? props.keys : colorScale.domain(),
+      colorScale
+    );
+
+    createTooltipHorizontal(svg, id, xScale, props.data, props.keys, valueMax, margin.left, yScale);
+
     return () => {
       svg.remove();
     };
@@ -108,7 +121,6 @@ export function HorizontalBarChart(props: {
 
   return (
     <div>
-      <h1>{props.name}</h1>
       <div id={id}></div>
     </div>
   );

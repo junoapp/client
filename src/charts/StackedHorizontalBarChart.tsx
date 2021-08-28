@@ -4,6 +4,8 @@ import { DatasetChartSpecValues } from '@junoapp/common';
 
 import { createColorScale, generateId } from '../utils/functions';
 import { UserContext } from '../contexts/user.context';
+import { createLegend } from '../utils/legends';
+import { createTooltipGroupHorizontal } from '../utils/tooltip-group-horizontal';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
@@ -18,7 +20,7 @@ export function StackedHorizontalBarChart(props: {
 
   useEffect(() => {
     const margin = {
-      top: 10,
+      top: 40,
       bottom: 30,
       left: 100,
       right: 10,
@@ -39,6 +41,7 @@ export function StackedHorizontalBarChart(props: {
         name: string;
         end: number;
         start: number;
+        value: number;
       }>;
     };
 
@@ -64,6 +67,7 @@ export function StackedHorizontalBarChart(props: {
           name: curr.name2,
           start: item.total,
           end: item.total + curr.value,
+          value: curr.value,
         });
 
         item.total += curr.value;
@@ -97,13 +101,27 @@ export function StackedHorizontalBarChart(props: {
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    groupData
+    createTooltipGroupHorizontal(
+      svg,
+      groupData,
+      id,
+      xScale,
+      yScale,
+      colorScale,
+      data,
+      valueMax,
+      margin.left
+    );
+
+    const groupItem = groupData
       .selectAll('g.group-item')
       .data(data)
       .enter()
       .append('g')
       .attr('class', 'group-item')
-      .attr('transform', (d) => `translate(0, ${yScale(d.name)})`)
+      .attr('transform', (d) => `translate(0, ${yScale(d.name)})`);
+
+    groupItem
       .selectAll('rect.data-item')
       .data((d) => d.values)
       .enter()
@@ -122,6 +140,8 @@ export function StackedHorizontalBarChart(props: {
 
     groupAxis.append('g').call(yAxis).attr('transform', `translate(${margin.left}, 0)`);
 
+    createLegend(svg, id, margin.left, colors, colorScale);
+
     return () => {
       svg.remove();
     };
@@ -129,7 +149,6 @@ export function StackedHorizontalBarChart(props: {
 
   return (
     <div>
-      <h1>{props.name}</h1>
       <div id={id}></div>
     </div>
   );

@@ -81,6 +81,7 @@ export function Dashboard(): JSX.Element {
                     : `${fieldY.join(', ')} by ${fieldX[0]}`,
                 values: datum.multipleLines.data,
                 axis: datum.multipleLines.axis,
+                keysTitle: fieldX.length > 1 ? fieldX : fieldY,
               });
             } else if (Object.keys(datum.encoding).length === 3) {
               const fieldColor = (datum.encoding.color as FieldDefBase<Field>).field.toString();
@@ -161,10 +162,13 @@ export function Dashboard(): JSX.Element {
                   value: convert(v[datum.value]), // isNaN(+v[datum.value]) ? undefined : +v[datum.value],
                 })),
                 geofile: datum.geoFile,
+                keysTitle: [datum.userMeasure.name],
               });
             }
           }
         }
+
+        console.log(cData);
 
         setChartData(cData);
       });
@@ -209,68 +213,79 @@ export function Dashboard(): JSX.Element {
             ))}
       </div>
 
-      {chartData &&
-        chartData
-          .filter((chart) => chart.page === page)
-          .map((chart, index) => (
-            <div key={`${chart.name}-${index}`}>
-              {chart.type === 'geoshape' && (
-                <MapChart
-                  name={chart.name}
-                  geofile={chart.geofile}
-                  data={chart.values as DatasetChartSpecValues[]}
-                />
-              )}
+      <div className="space-y-4">
+        {chartData &&
+          chartData
+            .filter((chart) => chart.page === page && chart.type !== 'text')
+            .map((chart, index) => (
+              <div key={`${chart.name}-${index}`}>
+                <Card title={chart.name}>
+                  {chart.type === 'geoshape' && (
+                    <MapChart
+                      name={chart.name}
+                      geofile={chart.geofile}
+                      data={chart.values as DatasetChartSpecValues[]}
+                    />
+                  )}
 
-              {chart.type === 'geo-lat-lng' && (
-                <MapBox name={chart.name} data={chart.values as DatasetGeoChartSpecValues[]} />
-              )}
+                  {chart.type === 'geo-lat-lng' && (
+                    <MapBox name={chart.name} data={chart.values as DatasetGeoChartSpecValues[]} />
+                  )}
 
-              {chart.type === 'multiple-line' && (
-                <MultipleLineChart
-                  name={chart.name}
-                  data={chart.values as DatasetRecommendationMultipleLinesData[]}
-                  axis={chart.axis!}
-                />
-              )}
+                  {chart.type === 'multiple-line' && (
+                    <MultipleLineChart
+                      name={chart.name}
+                      data={chart.values as DatasetRecommendationMultipleLinesData[]}
+                      axis={chart.axis!}
+                      keys={chart.keysTitle}
+                    />
+                  )}
 
-              {chart.type === 'line' && (
-                <LineChart name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
-              )}
+                  {chart.type === 'line' && (
+                    <LineChart
+                      name={chart.name}
+                      data={chart.values as DatasetChartSpecValues[]}
+                      keys={chart.keysTitle}
+                    />
+                  )}
 
-              {chart.type === 'heatmap' && (
-                <Heatmap name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
-              )}
+                  {chart.type === 'heatmap' && (
+                    <Heatmap name={chart.name} data={chart.values as DatasetChartSpecValues[]} />
+                  )}
 
-              {chart.type === 'vertical-bar' && (
-                <VerticalBarChart
-                  name={chart.name}
-                  data={chart.values as DatasetChartSpecValues[]}
-                />
-              )}
+                  {chart.type === 'vertical-bar' && (
+                    <VerticalBarChart
+                      name={chart.name}
+                      data={chart.values as DatasetChartSpecValues[]}
+                      keys={chart.keysTitle}
+                    />
+                  )}
 
-              {chart.type === 'horizontal-bar' && (
-                <HorizontalBarChart
-                  name={chart.name}
-                  data={chart.values as DatasetChartSpecValues[]}
-                />
-              )}
+                  {chart.type === 'horizontal-bar' && (
+                    <HorizontalBarChart
+                      name={chart.name}
+                      data={chart.values as DatasetChartSpecValues[]}
+                      keys={chart.keysTitle}
+                    />
+                  )}
 
-              {chart.type === 'stacked-horizontal-bar' && (
-                <StackedHorizontalBarChart
-                  name={chart.name}
-                  data={chart.values as DatasetChartSpecValues[]}
-                />
-              )}
+                  {chart.type === 'stacked-horizontal-bar' && (
+                    <StackedHorizontalBarChart
+                      name={chart.name}
+                      data={chart.values as DatasetChartSpecValues[]}
+                    />
+                  )}
 
-              {chart.type === 'grouped-horizontal-bar' && (
-                <GroupedHorizontalBarChart
-                  name={chart.name}
-                  data={chart.values as DatasetChartSpecValues[]}
-                />
-              )}
-            </div>
-          ))}
+                  {chart.type === 'grouped-horizontal-bar' && (
+                    <GroupedHorizontalBarChart
+                      name={chart.name}
+                      data={chart.values as DatasetChartSpecValues[]}
+                    />
+                  )}
+                </Card>
+              </div>
+            ))}
+      </div>
 
       {d &&
         d

@@ -53,3 +53,7 @@ export function createColorScale(
       : d3.schemeCategory10
   );
 }
+
+export function elementId(svgId: string, id: string): string {
+  return `${svgId}-${id}`;
+}
