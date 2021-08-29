@@ -28,15 +28,11 @@ import { Card } from '../components/ui/Card';
 import MapChart from '../charts/MapChart';
 import { MapBox } from '../charts/Mapbox';
 import { GroupedHorizontalBarChart } from '../charts/GroupedHorizontalBarChart';
+import { formatter } from '../utils/formatter';
 
 function convert(value: string) {
   return isNaN(+value) ? undefined : +value;
 }
-
-const formatter = new Intl.NumberFormat('pt-BR', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
-}).format;
 
 export function Dashboard(): JSX.Element {
   const [dashboard, setDashboard] = useState<DashboardRecommendation | undefined>(undefined);
@@ -71,6 +67,12 @@ export function Dashboard(): JSX.Element {
               const fieldY = [
                 ...new Set(datum.multipleLines.specs.map((spec) => (spec as any).userMeasure.name)),
               ];
+
+              // const numberTypes = datum.multipleLines.specs.map((spec) => ({
+              //   name: (spec as any).measure.name,
+              //   userName: (spec as any).userMeasure.name,
+              //   numberType: (spec as any).userMeasure.numberType,
+              // }));
 
               cData.push({
                 page: page.name,
@@ -130,6 +132,8 @@ export function Dashboard(): JSX.Element {
                     value: +(datum.data as InlineData).values[0],
                   },
                 ],
+                aggregate: datum.userMeasure?.aggregate,
+                numberType: datum.userMeasure?.numberType,
               });
             } else if (datum.mark === 'geo-lat-lng') {
               cData.push({
@@ -168,8 +172,6 @@ export function Dashboard(): JSX.Element {
           }
         }
 
-        console.log(cData);
-
         setChartData(cData);
       });
     });
@@ -207,7 +209,19 @@ export function Dashboard(): JSX.Element {
             .map((chart) => (
               <Card title={chart.name} key={chart.name} className="mx-4">
                 <div key={chart.name} className="card">
-                  <h3>{formatter((chart.values[0] as DatasetChartSpecValues).value)}</h3>
+                  <div className="flex items-center">
+                    <h3>
+                      {formatter(
+                        (chart.values[0] as DatasetChartSpecValues).value,
+                        chart.numberType
+                      )}
+                    </h3>
+                    {chart.aggregate && (
+                      <span className="text-gray-500 text-xs ml-1">
+                        ({chart.aggregate === 'SUM' ? 'soma' : 'média'})
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Card>
             ))}

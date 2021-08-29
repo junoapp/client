@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { formatRelative } from 'date-fns';
 import { Link } from 'react-router-dom';
 
-import { getAll, remove } from '../services/user.service';
+import { getAll } from '../services/user.service';
 import { UserInterface } from '@junoapp/common';
 import { Alert } from './ui/Alert';
 import { Loading } from './ui/Loading';
@@ -27,11 +27,11 @@ export function UsersList(): JSX.Element {
     load();
   }, []);
 
-  const onDeleteHandler = async (id: number) => {
-    setIsLoading(true);
-    await remove(id);
-    load();
-  };
+  // const onDeleteHandler = async (id: number) => {
+  //   setIsLoading(true);
+  //   await remove(id);
+  //   load();
+  // };
 
   return (
     <div className="relative flex flex-wrap -mx-4 min-h">
@@ -68,14 +68,14 @@ export function UsersList(): JSX.Element {
                   <FontAwesomeIcon icon="eye" />
                   Login
                 </Link>
-                <button
+                {/* <button
                   type="button"
                   className="button button-danger button-small"
                   onClick={() => onDeleteHandler(user.id)}
                 >
                   <FontAwesomeIcon icon="trash" />
                   Delete
-                </button>
+                </button> */}
               </div>
             </Card>
           </div>

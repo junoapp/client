@@ -16,7 +16,7 @@ export function Home(): JSX.Element {
     <div>
       <div className="flex">
         <Link to={`/user/add`} className="button button-primary">
-          Add new user
+          Adicionar usuário
         </Link>
       </div>
 

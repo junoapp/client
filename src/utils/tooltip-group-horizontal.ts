@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { formatter } from './formatter';
 import { elementId } from './functions';
 
 type GroupedData = {
@@ -8,11 +9,6 @@ type GroupedData = {
     value: number;
   }>;
 };
-
-const formatter = new Intl.NumberFormat('pt-BR', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
-}).format;
 
 export function createTooltipGroupHorizontal(
   svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,

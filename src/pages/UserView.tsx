@@ -21,11 +21,11 @@ export function UserView(): JSX.Element {
     <div>
       <div className="flex">
         <Link to={`/dataset/add`} className="button button-primary">
-          Add new dataset
+          Adicionar nova base de dados
         </Link>
       </div>
 
-      <div className="text-lg mt-3">My dashboards</div>
+      <div className="text-lg mt-3">Meus Dashboards</div>
 
       <hr />
 
@@ -33,7 +33,7 @@ export function UserView(): JSX.Element {
         <DashboardList />
       </div>
 
-      <div className="text-lg">Public datasets</div>
+      <div className="text-lg">Bases de dados públicos</div>
 
       <hr />
 

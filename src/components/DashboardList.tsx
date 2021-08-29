@@ -37,7 +37,7 @@ export function DashboardList(): JSX.Element {
     if (count > 0) {
       return (
         <Badge>
-          {count} {type.toLowerCase()} column{count > 1 ? 's' : ''}
+          {count} colunas {type.toLowerCase() === 'mesure' ? 'medidas' : 'dimensões'}
         </Badge>
       );
     }
@@ -78,14 +78,14 @@ export function DashboardList(): JSX.Element {
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="eye" />
-                  View
+                  Visualizar
                 </Link>
                 <Link
                   to={`/dashboard/${dashboard.id}/edit`}
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="pencil-alt" />
-                  Edit
+                  Editar
                 </Link>
               </div>
             </Card>

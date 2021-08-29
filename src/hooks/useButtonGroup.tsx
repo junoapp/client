@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { applyClass } from '../utils/functions';
 
 export function useButtonGroup(
@@ -20,6 +21,7 @@ export function useButtonGroup(
             )}`}
             onClick={() => setState(option.type)}
           >
+            {state === option.type && <FontAwesomeIcon icon="check" />}
             {option.label}
           </button>
         ))}

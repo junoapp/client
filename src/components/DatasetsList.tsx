@@ -33,7 +33,7 @@ export function DatasetsList(): JSX.Element {
     if (count > 0) {
       return (
         <Badge>
-          {count} {type.toLowerCase()} column{count > 1 ? 's' : ''}
+          {count} colunas de {type.toLowerCase() === 'measure' ? 'medidas' : 'dimensões'}
         </Badge>
       );
     }
@@ -74,7 +74,7 @@ export function DatasetsList(): JSX.Element {
                   className="button button-primary button-small mr-2"
                 >
                   <FontAwesomeIcon icon="pencil-alt" className="mr-1" />
-                  Create new dashboard
+                  Criar novo Dashboard
                 </Link>
               </div>
             </Card>

@@ -9,12 +9,17 @@ import { Loading } from '../components/ui/Loading';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/form/Input';
 import { Select } from '../components/form/Select';
-import { UploadInfoField } from '../models/upload-info';
+import { numberTypeMapper, UploadInfoField } from '../models/upload-info';
 import { DropdownOption } from '../models/dropdown-option';
-import { DashboardGoal, DashboardPurpose, DatasetColumnRole } from '@junoapp/common';
+import {
+  DashboardGoal,
+  DashboardPurpose,
+  DatasetColumnNumberType,
+  DatasetColumnRole,
+} from '@junoapp/common';
 import { UserContext } from '../contexts/user.context';
 import { DatasetSchemaAggregateFunction } from '@junoapp/common';
-import { capitalize } from '../utils/functions';
+import { applyClass, capitalize } from '../utils/functions';
 
 export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Element {
   const [isLoading, setLoading] = useState(false);
@@ -65,6 +70,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
               field.role === DatasetColumnRole.MEASURE
                 ? DatasetSchemaAggregateFunction.Sum
                 : DatasetSchemaAggregateFunction.None,
+            numberType: DatasetColumnNumberType.NONE,
           });
 
           indexes.push({
@@ -98,6 +104,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
             removed: field.removed,
             type: field.column.type,
             aggregate: field.aggregate,
+            numberType: field.numberType ?? DatasetColumnNumberType.NONE,
           });
 
           indexes.push({
@@ -202,7 +209,7 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                   <div>
                     {values.fields.length > 0 &&
                       values.fields.map((item, index) => (
-                        <div className="flex -mx-4 bg-white">
+                        <div key={index} className="flex -mx-4 bg-white">
                           {/* <div className="px-4 flex items-center">
                             <FontAwesomeIcon icon="bars" />
                           </div> */}
@@ -213,18 +220,42 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                               formik={{ getFieldProps }}
                             />
                           </div>
-                          <div className="px-4 w-2/5">
+                          <div
+                            className={`px-4 w-2/5 ${applyClass(
+                              item.type === 'number',
+                              'flex items-end'
+                            )}`}
+                          >
                             <Input
                               name={`fields.${index}.type`}
                               label={`Type`}
                               formik={{ getFieldProps }}
                               disabled
                             />
+                            {item.type === 'number' && (
+                              <div className="flex items-start mb-3 ml-2">
+                                {['none', 'dolar', 'real', 'percent'].map((option) => (
+                                  <button
+                                    key={option}
+                                    type="button"
+                                    className={`button button-primary rounded-none first:rounded-l-md last:rounded-r-md px-2 py-2.5 ${applyClass(
+                                      item.numberType === option,
+                                      'active'
+                                    )}`}
+                                    onClick={() =>
+                                      setFieldValue(`fields.${index}.numberType`, option)
+                                    }
+                                  >
+                                    {numberTypeMapper[option]}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                           <div className="px-4 w-2/5">
                             <Select
                               name={`fields.${index}.role`}
-                              label="Type"
+                              label="Role"
                               options={[
                                 { value: 'measure', label: 'Measure' },
                                 { value: 'dimension', label: 'Dimension' },
@@ -237,13 +268,13 @@ export function DatasetColumns({ action }: { action: 'add' | 'edit' }): JSX.Elem
                               name={`fields.${index}.aggregate`}
                               label="Aggregate"
                               options={[
-                                { value: 'NONE', label: 'None' },
-                                { value: 'MIN', label: 'Min' },
+                                // { value: 'NONE', label: 'None' },
+                                // { value: 'MIN', label: 'Min' },
                                 { value: 'MEAN', label: 'Mean' },
                                 { value: 'SUM', label: 'Sum' },
-                                { value: 'BIN', label: 'Bin' },
-                                { value: 'MAX', label: 'Max' },
-                                { value: 'MEDIAN', label: 'Median' },
+                                // { value: 'BIN', label: 'Bin' },
+                                // { value: 'MAX', label: 'Max' },
+                                // { value: 'MEDIAN', label: 'Median' },
                               ]}
                               formik={{ getFieldProps }}
                               disabled={

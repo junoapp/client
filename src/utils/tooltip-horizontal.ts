@@ -1,12 +1,8 @@
 import { DatasetChartSpecValues } from '@junoapp/common';
 import * as d3 from 'd3';
 import { format } from 'date-fns';
+import { formatter } from './formatter';
 import { elementId, scaleBandInvert } from './functions';
-
-const formatter = new Intl.NumberFormat('pt-BR', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
-}).format;
 
 export function createTooltipHorizontal(
   svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,

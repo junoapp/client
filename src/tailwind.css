@@ -50,9 +50,12 @@ html {
   @apply bg-yellow-500;
 }
 
-.button.button-primary:hover,
 .button.button-primary.active {
   @apply bg-yellow-700;
+}
+
+.button.button-primary:hover {
+  @apply bg-yellow-600;
 }
 
 .button.button-success {
@@ -83,6 +86,11 @@ html {
 
 .input {
   @apply appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight;
+}
+
+.input:disabled,
+.select:disabled {
+  @apply opacity-50;
 }
 
 .select {

@@ -1,4 +1,4 @@
-import { DatasetSchemaAggregateFunction } from '@junoapp/common';
+import { DatasetColumnNumberType, DatasetSchemaAggregateFunction } from '@junoapp/common';
 
 export type UploadInfoField = {
   id: number;
@@ -9,4 +9,12 @@ export type UploadInfoField = {
   removed: boolean;
   type: string;
   aggregate: DatasetSchemaAggregateFunction;
+  numberType: DatasetColumnNumberType;
+};
+
+export const numberTypeMapper = {
+  none: '-',
+  dolar: '$',
+  real: 'R$',
+  percent: '%',
 };

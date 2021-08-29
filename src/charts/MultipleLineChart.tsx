@@ -9,15 +9,11 @@ import { createColorScale, generateId } from '../utils/functions';
 import { UserContext } from '../contexts/user.context';
 import { createLegend } from '../utils/legends';
 import { format } from 'date-fns';
+import { formatter } from '../utils/formatter';
 
 function elementId(svgId: string, id: string): string {
   return `${svgId}-${id}`;
 }
-
-const formatter = new Intl.NumberFormat('pt-BR', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
-}).format;
 
 export function MultipleLineChart(props: {
   name: string;
